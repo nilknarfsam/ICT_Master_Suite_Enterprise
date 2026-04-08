@@ -168,3 +168,5 @@ C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Presentation.Wpf\obj\Debug\net8.
 C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Presentation.Wpf\obj\Debug\net8.0-windows\ICTMasterSuite.Presentation.Wpf.sourcelink.json
 C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Presentation.Wpf\obj\Debug\net8.0-windows\RegisterAnalysisWindow.baml
 C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Presentation.Wpf\obj\Debug\net8.0-windows\RegisterAnalysisWindow.g.cs
+C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Presentation.Wpf\bin\Debug\net8.0-windows\Microsoft.Extensions.Http.dll
+c:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Presentation.Wpf\obj\Debug\net8.0-windows\Themes\Theme.ModuleChrome.baml

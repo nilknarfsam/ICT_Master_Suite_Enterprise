@@ -31,6 +31,7 @@
         </Border>
 
         <Border Grid.Column="1" Padding="24" Background="{DynamicResource AppBackgroundBrush}">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
             <StackPanel>
                 <TextBlock Text="{Binding SelectedModule.Title}" Style="{DynamicResource HeaderTextStyle}" />
                 <TextBlock Text="{Binding SelectedModule.Description}" Margin="0,8,0,16" Foreground="{DynamicResource MutedTextBrush}" />
@@ -51,7 +52,8 @@
                             <ColumnDefinition Width="2*" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <DataGrid ItemsSource="{Binding UserManagement.Users}"
+                        <DataGrid Style="{DynamicResource PremiumDataGridStyle}"
+                                  ItemsSource="{Binding UserManagement.Users}"
                                   SelectedItem="{Binding UserManagement.SelectedUser}"
                                   AutoGenerateColumns="False"
                                   IsReadOnly="True">
@@ -72,9 +74,11 @@
                             <TextBox Text="{Binding UserManagement.EmailInput, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,8" />
                             <TextBlock Text="Senha inicial/reset" />
                             <TextBox Text="{Binding UserManagement.PasswordInput, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,8" />
-                            <TextBlock Text="{Binding UserManagement.OperationMessage}" Foreground="{DynamicResource MutedTextBrush}" TextWrapping="Wrap" />
                         </StackPanel>
                     </Grid>
+                    <TextBlock Style="{DynamicResource ModuleStatusBarTextStyle}"
+                               Visibility="{Binding SelectedModule.Module, Converter={StaticResource ModuleVisibilityConverter}, ConverterParameter=UsersAndProfiles}"
+                               Text="{Binding UserManagement.StatusMessage}" />
                 </Grid>
                 <Grid Margin="0,16,0,0" Visibility="{Binding SelectedModule.Module, Converter={StaticResource ModuleVisibilityConverter}, ConverterParameter=LogFinder}">
                     <Grid.RowDefinitions>
@@ -108,24 +112,42 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
 
-                    <DataGrid Grid.Row="2"
-                              ItemsSource="{Binding LogSearch.Results}"
-                              SelectedItem="{Binding LogSearch.SelectedResult}"
-                              AutoGenerateColumns="False"
-                              IsReadOnly="True">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Arquivo" Binding="{Binding FileName}" Width="*" />
-                            <DataGridTextColumn Header="Tipo" Binding="{Binding SourceType}" Width="100" />
-                            <DataGridTextColumn Header="Resultado" Binding="{Binding Result}" Width="100" />
-                            <DataGridTextColumn Header="Serial" Binding="{Binding SerialNumber}" Width="150" />
-                            <DataGridTextColumn Header="Modelo" Binding="{Binding Model}" Width="150" />
-                            <DataGridTextColumn Header="Estação" Binding="{Binding Station}" Width="130" />
-                            <DataGridTextColumn Header="Timestamp" Binding="{Binding LogTimestamp}" Width="160" />
-                            <DataGridTextColumn Header="Erro" Binding="{Binding ErrorCode}" Width="120" />
-                            <DataGridTextColumn Header="Descrição Erro" Binding="{Binding ErrorDescription}" Width="2*" />
-                            <DataGridTextColumn Header="Resumo" Binding="{Binding Summary}" Width="2*" />
-                        </DataGrid.Columns>
-                    </DataGrid>
+                    <Grid Grid.Row="2" MinHeight="240">
+                        <DataGrid Style="{DynamicResource PremiumDataGridStyle}"
+                                  ItemsSource="{Binding LogSearch.Results}"
+                                  SelectedItem="{Binding LogSearch.SelectedResult}"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Arquivo" Binding="{Binding FileName}" Width="*" />
+                                <DataGridTextColumn Header="Tipo" Binding="{Binding SourceType}" Width="100" />
+                                <DataGridTextColumn Header="Resultado" Binding="{Binding Result}" Width="100" />
+                                <DataGridTextColumn Header="Serial" Binding="{Binding SerialNumber}" Width="150" />
+                                <DataGridTextColumn Header="Modelo" Binding="{Binding Model}" Width="150" />
+                                <DataGridTextColumn Header="Estação" Binding="{Binding Station}" Width="130" />
+                                <DataGridTextColumn Header="Timestamp" Binding="{Binding LogTimestamp}" Width="160" />
+                                <DataGridTextColumn Header="Erro" Binding="{Binding ErrorCode}" Width="120" />
+                                <DataGridTextColumn Header="Descrição Erro" Binding="{Binding ErrorDescription}" Width="2*" />
+                                <DataGridTextColumn Header="Resumo" Binding="{Binding Summary}" Width="2*" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <Border Style="{DynamicResource LoadingOverlayStyle}"
+                                Visibility="{Binding LogSearch.IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <TextBlock Text="Analisando logs e aplicando o parser..."
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Center"
+                                       Foreground="{DynamicResource PrimaryTextBrush}" />
+                        </Border>
+                        <Border Style="{DynamicResource EmptyStateBannerStyle}"
+                                VerticalAlignment="Top"
+                                HorizontalAlignment="Stretch"
+                                Margin="12,12,12,0"
+                                Visibility="{Binding LogSearch.ShowFinderEmptyBanner, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <TextBlock Text="Nenhum resultado na grade. Adicione diretórios válidos e execute uma pesquisa."
+                                       Foreground="{DynamicResource MutedTextBrush}"
+                                       TextWrapping="Wrap" />
+                        </Border>
+                    </Grid>
                     <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,8,8,0">
                         <Button Style="{DynamicResource SoftButtonStyle}" Content="Registrar análise" Command="{Binding LogSearch.RegisterAnalysisCommand}" />
                         <Button Margin="8,0,0,0" Style="{DynamicResource SoftButtonStyle}" Content="Ver histórico" Command="{Binding LogSearch.OpenHistoryCommand}" />
@@ -151,7 +173,15 @@
                             <ColumnDefinition Width="2*" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <DataGrid ItemsSource="{Binding TechnicalHistory.Analyses}"
+                        <StackPanel Grid.Column="0">
+                        <Border Style="{DynamicResource EmptyStateBannerStyle}"
+                                Visibility="{Binding TechnicalHistory.ShowHistoryGridEmpty, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <TextBlock Text="Nenhuma análise listada para o serial informado."
+                                       Foreground="{DynamicResource MutedTextBrush}" />
+                        </Border>
+                        <DataGrid Style="{DynamicResource PremiumDataGridStyle}"
+                                  MinHeight="200"
+                                  ItemsSource="{Binding TechnicalHistory.Analyses}"
                                   SelectedItem="{Binding TechnicalHistory.SelectedAnalysis}"
                                   AutoGenerateColumns="False"
                                   IsReadOnly="True">
@@ -164,6 +194,7 @@
                                 <DataGridTextColumn Header="Resumo" Binding="{Binding Summary}" Width="*" />
                             </DataGrid.Columns>
                         </DataGrid>
+                        </StackPanel>
                         <Border Grid.Column="1" Margin="12,0,0,0" Style="{DynamicResource PremiumCardStyle}">
                             <StackPanel>
                                 <TextBlock Text="Detalhe da análise" Style="{DynamicResource SectionTitleTextStyle}" />
@@ -174,8 +205,8 @@
                                 <TextBlock Text="{Binding TechnicalHistory.SelectedAnalysis.AnalysisText}" TextWrapping="Wrap" Margin="0,10,0,0" />
                                 <TextBlock Margin="0,14,0,0"
                                            Foreground="{DynamicResource MutedTextBrush}"
-                                           Visibility="{Binding TechnicalHistory.HasResults, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=False}"
-                                           Text="Nenhuma análise selecionada." />
+                                           Visibility="{Binding TechnicalHistory.ShowSelectionPlaceholder, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                           Text="Selecione uma linha na grade para ver o detalhe." />
                             </StackPanel>
                         </Border>
                     </Grid>
@@ -204,7 +235,15 @@
                             <ColumnDefinition Width="2*" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <DataGrid ItemsSource="{Binding KnowledgeBase.Articles}"
+                        <StackPanel Grid.Column="0">
+                        <Border Style="{DynamicResource EmptyStateBannerStyle}"
+                                Visibility="{Binding KnowledgeBase.ShowKbEmptyBanner, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <TextBlock Text="Nenhum artigo encontrado para os filtros atuais."
+                                       Foreground="{DynamicResource MutedTextBrush}" />
+                        </Border>
+                        <DataGrid Style="{DynamicResource PremiumDataGridStyle}"
+                                  MinHeight="200"
+                                  ItemsSource="{Binding KnowledgeBase.Articles}"
                                   SelectedItem="{Binding KnowledgeBase.SelectedArticle}"
                                   AutoGenerateColumns="False"
                                   IsReadOnly="True">
@@ -215,6 +254,7 @@
                                 <DataGridCheckBoxColumn Header="Ativo" Binding="{Binding IsActive}" Width="70" />
                             </DataGrid.Columns>
                         </DataGrid>
+                        </StackPanel>
                         <Border Grid.Column="1" Margin="12,0,0,0" Style="{DynamicResource PremiumCardStyle}">
                             <StackPanel>
                                 <TextBlock Text="Editor de Artigo" Style="{DynamicResource SectionTitleTextStyle}" />
@@ -240,6 +280,7 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
                             <TextBlock Text="Relatórios Técnicos" Style="{DynamicResource SectionTitleTextStyle}" />
@@ -261,7 +302,15 @@
                             <StackPanel Grid.Row="3" Margin="0,10,0,0" Orientation="Horizontal">
                                 <Button Style="{DynamicResource SoftButtonStyle}" Content="Finder Excel" Command="{Binding Reports.ExportFinderExcelCommand}" />
                                 <Button Margin="8,0,0,0" Style="{DynamicResource SoftButtonStyle}" Content="Finder PDF" Command="{Binding Reports.ExportFinderPdfCommand}" />
-                                <TextBlock Margin="12,6,0,0" Foreground="{DynamicResource MutedTextBrush}" Text="{Binding Reports.StatusMessage}" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="4" Margin="0,10,0,0">
+                                <ProgressBar Height="3"
+                                             IsIndeterminate="True"
+                                             Visibility="{Binding Reports.IsExporting, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                <TextBlock Style="{DynamicResource ModuleStatusBarTextStyle}"
+                                           Margin="0,6,0,0"
+                                           Text="{Binding Reports.StatusMessage}" />
                             </StackPanel>
                         </Grid>
                     </Border>
@@ -300,15 +349,26 @@
                                     <TextBlock Text="Seriais com maior reincidência" Style="{DynamicResource SectionTitleTextStyle}" />
                                     <Button DockPanel.Dock="Right" Style="{DynamicResource SoftButtonStyle}" Content="Atualizar" Command="{Binding Dashboard.RefreshCommand}" />
                                 </DockPanel>
-                                <DataGrid Grid.Row="1" Margin="0,10,0,0" ItemsSource="{Binding Dashboard.TopSerials}" AutoGenerateColumns="False" IsReadOnly="True">
+                                <StackPanel Grid.Row="1" Margin="0,10,0,0">
+                                <Border Style="{DynamicResource EmptyStateBannerStyle}"
+                                        Visibility="{Binding Dashboard.HasTopSerials, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter='Invert'}">
+                                    <TextBlock Text="Sem dados de reincidência suficientes para exibir no período atual."
+                                               Foreground="{DynamicResource MutedTextBrush}" />
+                                </Border>
+                                <DataGrid Style="{DynamicResource PremiumDataGridStyle}"
+                                          MinHeight="160"
+                                          ItemsSource="{Binding Dashboard.TopSerials}"
+                                          AutoGenerateColumns="False"
+                                          IsReadOnly="True">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Header="Serial" Binding="{Binding SerialNumber}" Width="*" />
                                         <DataGridTextColumn Header="Ocorrências" Binding="{Binding Occurrences}" Width="130" />
                                     </DataGrid.Columns>
                                 </DataGrid>
+                                </StackPanel>
                             </Grid>
                         </Border>
-                        <TextBlock Margin="0,8,0,0" Text="{Binding Dashboard.StatusMessage}" Foreground="{DynamicResource MutedTextBrush}" />
+                        <TextBlock Style="{DynamicResource ModuleStatusBarTextStyle}" Text="{Binding Dashboard.StatusMessage}" />
                     </StackPanel>
                 </Grid>
                 <Grid Margin="0,16,0,0" Visibility="{Binding SelectedModule.Module, Converter={StaticResource ModuleVisibilityConverter}, ConverterParameter=SystemSettings}">
@@ -343,7 +403,9 @@
                                 <Button Style="{DynamicResource SoftButtonStyle}" Content="Recarregar" Command="{Binding Settings.LoadCommand}" />
                                 <Button Margin="8,0,0,0" Style="{DynamicResource SoftButtonStyle}" Content="Salvar configurações" Command="{Binding Settings.SaveCommand}" />
                             </StackPanel>
-                            <TextBlock Grid.Row="3" Margin="0,8,0,0" Text="{Binding Settings.StatusMessage}" Foreground="{DynamicResource MutedTextBrush}" />
+                            <TextBlock Grid.Row="3"
+                                       Style="{DynamicResource ModuleStatusBarTextStyle}"
+                                       Text="{Binding Settings.StatusMessage}" />
                         </Grid>
                     </Border>
                 </Grid>
@@ -351,30 +413,62 @@
                     <Border Style="{DynamicResource PremiumCardStyle}">
                         <StackPanel>
                             <TextBlock Text="Updater Enterprise" Style="{DynamicResource SectionTitleTextStyle}" />
-                            <TextBlock Margin="0,8,0,0" Text="{Binding Updater.CurrentVersion, StringFormat='Versão atual: {0}'}" />
-                            <TextBlock Text="{Binding Updater.LatestVersion, StringFormat='Última versão: {0}'}" />
-                            <TextBlock Text="{Binding Updater.ReleaseNotes}" TextWrapping="Wrap" Margin="0,8,0,0" Foreground="{DynamicResource MutedTextBrush}" />
+                            <TextBlock Margin="0,6,0,0"
+                                       Foreground="{DynamicResource MutedTextBrush}"
+                                       Text="{Binding Updater.CheckSourceDescription}"
+                                       TextWrapping="Wrap" />
+                            <WrapPanel Margin="0,12,0,0">
+                                <Border Style="{DynamicResource PremiumCardStyle}" Width="200" Margin="0,0,10,10" Padding="10">
+                                    <StackPanel>
+                                        <TextBlock Text="Versão local" Foreground="{DynamicResource MutedTextBrush}" FontSize="11" />
+                                        <TextBlock Text="{Binding Updater.CurrentVersion}" FontSize="22" FontWeight="Bold" />
+                                    </StackPanel>
+                                </Border>
+                                <Border Style="{DynamicResource PremiumCardStyle}" Width="200" Margin="0,0,10,10" Padding="10">
+                                    <StackPanel>
+                                        <TextBlock Text="Referência remota / catálogo" Foreground="{DynamicResource MutedTextBrush}" FontSize="11" />
+                                        <TextBlock Text="{Binding Updater.LatestVersion}" FontSize="22" FontWeight="Bold" />
+                                    </StackPanel>
+                                </Border>
+                                <Border Style="{DynamicResource PremiumCardStyle}" Width="220" Margin="0,0,10,10" Padding="10">
+                                    <StackPanel>
+                                        <TextBlock Text="Situação" Foreground="{DynamicResource MutedTextBrush}" FontSize="11" />
+                                        <TextBlock Text="{Binding Updater.UpdateStatusLabel}"
+                                                   TextWrapping="Wrap"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource AccentBrush}" />
+                                    </StackPanel>
+                                </Border>
+                            </WrapPanel>
+                            <TextBlock Text="Notas de versão" Style="{DynamicResource SectionTitleTextStyle}" Margin="0,4,0,4" />
+                            <TextBlock Text="{Binding Updater.ReleaseNotes}" TextWrapping="Wrap" Foreground="{DynamicResource MutedTextBrush}" />
+                            <TextBlock Margin="0,10,0,0" Text="Publicação (feed)" Foreground="{DynamicResource MutedTextBrush}" />
+                            <TextBlock Text="{Binding Updater.RemotePublishedDisplay}" Foreground="{DynamicResource PrimaryTextBrush}" />
+                            <TextBlock Margin="0,10,0,0" Text="Download / pacote" Style="{DynamicResource SectionTitleTextStyle}" />
                             <TextBlock Text="{Binding Updater.DownloadUrl}" TextWrapping="Wrap" Foreground="{DynamicResource AccentBrush}" />
-                            <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
+                            <TextBlock Margin="0,10,0,0" Text="Integridade (futura)" Foreground="{DynamicResource MutedTextBrush}" />
+                            <TextBlock Text="{Binding Updater.IntegrityPreview}" TextWrapping="Wrap" Foreground="{DynamicResource MutedTextBrush}" />
+                            <StackPanel Margin="0,12,0,0" Orientation="Horizontal">
                                 <Button Style="{DynamicResource SoftButtonStyle}" Content="Verificar atualização" Command="{Binding Updater.CheckCommand}" />
-                                <TextBlock Margin="12,6,0,0" Text="{Binding Updater.StatusMessage}" Foreground="{DynamicResource MutedTextBrush}" />
                             </StackPanel>
+                            <TextBlock Style="{DynamicResource ModuleStatusBarTextStyle}" Text="{Binding Updater.StatusMessage}" />
                         </StackPanel>
                     </Border>
                 </Grid>
-                <TextBlock Margin="0,8,0,0"
+                <TextBlock Style="{DynamicResource ModuleStatusBarTextStyle}"
+                           Foreground="{DynamicResource PrimaryTextBrush}"
                            Visibility="{Binding SelectedModule.Module, Converter={StaticResource ModuleVisibilityConverter}, ConverterParameter=LogFinder}"
-                           Text="{Binding LogSearch.StatusMessage}"
-                           Foreground="{DynamicResource PrimaryTextBrush}" />
-                <TextBlock Margin="0,8,0,0"
+                           Text="{Binding LogSearch.StatusMessage}" />
+                <TextBlock Style="{DynamicResource ModuleStatusBarTextStyle}"
+                           Foreground="{DynamicResource PrimaryTextBrush}"
                            Visibility="{Binding SelectedModule.Module, Converter={StaticResource ModuleVisibilityConverter}, ConverterParameter=TechnicalHistory}"
-                           Text="{Binding TechnicalHistory.StatusMessage}"
-                           Foreground="{DynamicResource PrimaryTextBrush}" />
-                <TextBlock Margin="0,8,0,0"
+                           Text="{Binding TechnicalHistory.StatusMessage}" />
+                <TextBlock Style="{DynamicResource ModuleStatusBarTextStyle}"
+                           Foreground="{DynamicResource PrimaryTextBrush}"
                            Visibility="{Binding SelectedModule.Module, Converter={StaticResource ModuleVisibilityConverter}, ConverterParameter=KnowledgeBase}"
-                           Text="{Binding KnowledgeBase.StatusMessage}"
-                           Foreground="{DynamicResource PrimaryTextBrush}" />
+                           Text="{Binding KnowledgeBase.StatusMessage}" />
             </StackPanel>
+            </ScrollViewer>
         </Border>
     </Grid>
 </Window>

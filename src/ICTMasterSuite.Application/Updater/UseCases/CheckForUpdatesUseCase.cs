@@ -6,6 +6,6 @@ namespace ICTMasterSuite.Application.Updater.UseCases;
 
 public sealed class CheckForUpdatesUseCase(IUpdaterService updaterService)
 {
-    public Task<Result<VersionInfoDto>> ExecuteAsync(CancellationToken cancellationToken = default)
-        => updaterService.CheckForUpdatesAsync(cancellationToken);
+    public Task<Result<VersionInfoDto>> ExecuteAsync(UpdaterCheckRequest? request = null, CancellationToken cancellationToken = default)
+        => updaterService.CheckForUpdatesAsync(request, cancellationToken);
 }

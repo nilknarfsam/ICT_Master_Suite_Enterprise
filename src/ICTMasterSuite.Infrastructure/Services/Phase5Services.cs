@@ -6,14 +6,8 @@ using ICTMasterSuite.Application.Common;
 using ICTMasterSuite.Application.Configuration.Dtos;
 using ICTMasterSuite.Application.Dashboard.Dtos;
 using ICTMasterSuite.Application.Reporting.Dtos;
-using ICTMasterSuite.Application.Updater.Dtos;
 using ICTMasterSuite.Domain.Entities;
 using ICTMasterSuite.Domain.Enums;
-using Microsoft.Extensions.Configuration;
-using QuestPDF.Fluent;
-using QuestPDF.Helpers;
-using QuestPDF.Infrastructure;
-using Serilog;
 
 namespace ICTMasterSuite.Infrastructure.Services;
 
@@ -22,27 +16,39 @@ public sealed class ReportingService(
     IKnowledgeBaseArticleRepository knowledgeRepository,
     IAuditLogger auditLogger) : IReportingService
 {
+    private sealed record PdfMeta(string Title, string Subtitle, string SectionTitle);
+
     public async Task<Result<ReportFileDto>> ExportTechnicalHistoryAsync(TechnicalHistoryReportRequest request, CancellationToken cancellationToken = default)
     {
         var rows = await technicalRepository.ListBySerialAsync(request.SerialNumber, cancellationToken);
+        var serial = request.SerialNumber.Trim();
         return await ExportAsync(
             request.Format,
-            $"technical-history-{request.SerialNumber}",
-            ["Date", "Serial", "Model", "Result", "Error", "Summary"],
+            $"technical-history-{serial}",
+            ["Data (UTC)", "Serial", "Modelo", "Resultado", "Erro", "Resumo"],
             rows.Select(x => new[] { x.CreatedAt.ToString("yyyy-MM-dd HH:mm"), x.SerialNumber, x.Model, x.Result.ToString(), x.ErrorCode, x.Summary }).ToList(),
             "technical-history.export",
+            new PdfMeta(
+                "Histórico técnico",
+                $"Serial {serial}",
+                "Registros de análises"),
             cancellationToken);
     }
 
     public async Task<Result<ReportFileDto>> ExportKnowledgeBaseAsync(KnowledgeBaseReportRequest request, CancellationToken cancellationToken = default)
     {
         var rows = await knowledgeRepository.SearchAsync(request.ModelFilter, request.TestPhaseFilter, request.TermFilter, true, cancellationToken);
+        var subtitle = BuildKnowledgeBaseSubtitle(request);
         return await ExportAsync(
             request.Format,
             "knowledge-base",
-            ["Model", "Phase", "Symptom", "Solution", "Author", "Active"],
-            rows.Select(x => new[] { x.Model, x.TestPhase, x.Symptom, x.Solution, x.Author, x.IsActive ? "Yes" : "No" }).ToList(),
+            ["Modelo", "Fase", "Sintoma", "Solução", "Autor", "Ativo"],
+            rows.Select(x => new[] { x.Model, x.TestPhase, x.Symptom, x.Solution, x.Author, x.IsActive ? "Sim" : "Não" }).ToList(),
             "knowledge-base.export",
+            new PdfMeta(
+                "Base de conhecimento",
+                subtitle,
+                "Artigos exportados"),
             cancellationToken);
     }
 
@@ -51,10 +57,35 @@ public sealed class ReportingService(
         return ExportAsync(
             request.Format,
             "finder-results",
-            ["File", "Type", "Result", "Serial", "Model", "Error", "Summary"],
+            ["Arquivo", "Tipo", "Resultado", "Serial", "Modelo", "Erro", "Resumo"],
             request.Results.Select(x => new[] { x.FileName, x.SourceType, x.Result.ToString(), x.SerialNumber, x.Model, x.ErrorCode, x.Summary }).ToList(),
             "finder.export",
+            new PdfMeta(
+                "Finder de logs / Parser",
+                "Resultados da última pesquisa em memória",
+                "Arquivos analisados"),
             cancellationToken);
+    }
+
+    private static string BuildKnowledgeBaseSubtitle(KnowledgeBaseReportRequest request)
+    {
+        var parts = new List<string>();
+        if (!string.IsNullOrWhiteSpace(request.ModelFilter))
+        {
+            parts.Add($"Modelo: {request.ModelFilter.Trim()}");
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.TestPhaseFilter))
+        {
+            parts.Add($"Fase: {request.TestPhaseFilter.Trim()}");
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.TermFilter))
+        {
+            parts.Add($"Termo: {request.TermFilter.Trim()}");
+        }
+
+        return parts.Count > 0 ? string.Join(" · ", parts) : "Todos os filtros (exportação ampla)";
     }
 
     private async Task<Result<ReportFileDto>> ExportAsync(
@@ -63,6 +94,7 @@ public sealed class ReportingService(
         IReadOnlyCollection<string> headers,
         IReadOnlyCollection<string[]> rows,
         string auditAction,
+        PdfMeta pdfMeta,
         CancellationToken cancellationToken)
     {
         Directory.CreateDirectory("reports");
@@ -74,35 +106,35 @@ public sealed class ReportingService(
         if (format == ReportFormat.Excel)
         {
             using var workbook = new XLWorkbook();
-            var sheet = workbook.Worksheets.Add("Report");
-            for (var i = 0; i < headers.Count; i++) sheet.Cell(1, i + 1).Value = headers.ElementAt(i);
+            var sheet = workbook.Worksheets.Add("Relatorio");
+            for (var i = 0; i < headers.Count; i++)
+            {
+                sheet.Cell(1, i + 1).Value = headers.ElementAt(i);
+            }
+
             var rowIndex = 2;
             foreach (var row in rows)
             {
-                for (var i = 0; i < row.Length; i++) sheet.Cell(rowIndex, i + 1).Value = row[i];
+                for (var i = 0; i < row.Length; i++)
+                {
+                    sheet.Cell(rowIndex, i + 1).Value = row[i];
+                }
+
                 rowIndex++;
             }
+
             workbook.SaveAs(filePath);
         }
         else
         {
-            QuestPDF.Settings.License = LicenseType.Community;
-            Document.Create(container =>
-            {
-                container.Page(page =>
-                {
-                    page.Margin(24);
-                    page.Header().Text("ICT Master Suite Report").FontSize(18).Bold();
-                    page.Content().Column(col =>
-                    {
-                        col.Item().Text(string.Join(" | ", headers)).FontColor(Colors.Grey.Darken2);
-                        foreach (var row in rows)
-                        {
-                            col.Item().Text(string.Join(" | ", row));
-                        }
-                    });
-                });
-            }).GeneratePdf(filePath);
+            var definition = new InstitutionalPdfDocumentBuilder.Definition(
+                pdfMeta.Title,
+                pdfMeta.Subtitle,
+                pdfMeta.SectionTitle,
+                headers.ToList(),
+                rows.ToList(),
+                DateTimeOffset.UtcNow);
+            InstitutionalPdfDocumentBuilder.GeneratePdf(filePath, definition);
         }
 
         await auditLogger.WriteAsync(auditAction, $"Format: {format}; File: {filePath}", cancellationToken);
@@ -134,22 +166,6 @@ public sealed class DashboardService(
             failCount,
             passCount,
             topSerials));
-    }
-}
-
-public sealed class UpdaterService(IConfiguration configuration, IAuditLogger auditLogger) : IUpdaterService
-{
-    public async Task<Result<VersionInfoDto>> CheckForUpdatesAsync(CancellationToken cancellationToken = default)
-    {
-        var current = "1.0.0";
-        var latest = configuration["Updater:LatestVersion"] ?? current;
-        var notes = configuration["Updater:Notes"] ?? "Nenhuma nota informada.";
-        var url = configuration["Updater:DownloadUrl"] ?? string.Empty;
-        var available = !string.Equals(current, latest, StringComparison.OrdinalIgnoreCase);
-
-        await auditLogger.WriteAsync("updater.check", $"Current: {current}; Latest: {latest}; Available: {available}", cancellationToken);
-        Log.Information("Updater check executado. Current={Current} Latest={Latest} Available={Available}", current, latest, available);
-        return Result<VersionInfoDto>.Success(new VersionInfoDto(current, latest, available, notes, url));
     }
 }
 

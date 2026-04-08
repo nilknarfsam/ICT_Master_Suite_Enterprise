@@ -18,6 +18,7 @@ public partial class ReportsViewModel(
     [ObservableProperty] private string phaseFilter = string.Empty;
     [ObservableProperty] private string termFilter = string.Empty;
     [ObservableProperty] private string statusMessage = string.Empty;
+    [ObservableProperty] private bool isExporting;
 
     [RelayCommand]
     private async Task ExportTechnicalHistoryExcelAsync() => await ExportTechnicalHistoryAsync(ReportFormat.Excel);
@@ -45,14 +46,32 @@ public partial class ReportsViewModel(
 
     private async Task ExportTechnicalHistoryAsync(ReportFormat format)
     {
-        var result = await exportTechnicalHistoryUseCase.ExecuteAsync(new TechnicalHistoryReportRequest(SerialInput, format));
-        StatusMessage = result.IsSuccess ? $"Relatório gerado: {result.Value?.DisplayName}" : result.Message;
+        IsExporting = true;
+        StatusMessage = "Gerando relatório...";
+        try
+        {
+            var result = await exportTechnicalHistoryUseCase.ExecuteAsync(new TechnicalHistoryReportRequest(SerialInput, format));
+            StatusMessage = result.IsSuccess ? $"Relatório gerado: {result.Value?.DisplayName}" : result.Message;
+        }
+        finally
+        {
+            IsExporting = false;
+        }
     }
 
     private async Task ExportKnowledgeBaseAsync(ReportFormat format)
     {
-        var result = await exportKnowledgeBaseUseCase.ExecuteAsync(new KnowledgeBaseReportRequest(ModelFilter, PhaseFilter, TermFilter, format));
-        StatusMessage = result.IsSuccess ? $"Relatório gerado: {result.Value?.DisplayName}" : result.Message;
+        IsExporting = true;
+        StatusMessage = "Gerando relatório...";
+        try
+        {
+            var result = await exportKnowledgeBaseUseCase.ExecuteAsync(new KnowledgeBaseReportRequest(ModelFilter, PhaseFilter, TermFilter, format));
+            StatusMessage = result.IsSuccess ? $"Relatório gerado: {result.Value?.DisplayName}" : result.Message;
+        }
+        finally
+        {
+            IsExporting = false;
+        }
     }
 
     private async Task ExportFinderAsync(ReportFormat format)
@@ -63,7 +82,17 @@ public partial class ReportsViewModel(
             return;
         }
 
-        var result = await exportFinderResultsUseCase.ExecuteAsync(new FinderResultsReportRequest(finderResultsState.LastResults, format));
-        StatusMessage = result.IsSuccess ? $"Relatório gerado: {result.Value?.DisplayName}" : result.Message;
+        IsExporting = true;
+        StatusMessage = "Gerando relatório...";
+        try
+        {
+            var result = await exportFinderResultsUseCase.ExecuteAsync(new FinderResultsReportRequest(finderResultsState.LastResults, format));
+            StatusMessage = result.IsSuccess ? $"Relatório gerado: {result.Value?.DisplayName}" : result.Message;
+        }
+        finally
+        {
+            IsExporting = false;
+        }
     }
 }
+

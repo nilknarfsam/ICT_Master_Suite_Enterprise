@@ -21,6 +21,13 @@ public partial class KnowledgeBaseViewModel(IKnowledgeBaseService knowledgeBaseS
     [ObservableProperty] private string authorInput = "Analista";
     [ObservableProperty] private string statusMessage = string.Empty;
     [ObservableProperty] private bool hasResults;
+    [ObservableProperty] private bool hasPerformedSearch;
+
+    public bool ShowKbEmptyBanner => HasPerformedSearch && !HasResults;
+
+    partial void OnHasResultsChanged(bool value) => OnPropertyChanged(nameof(ShowKbEmptyBanner));
+
+    partial void OnHasPerformedSearchChanged(bool value) => OnPropertyChanged(nameof(ShowKbEmptyBanner));
 
     [RelayCommand]
     private async Task SearchAsync()
@@ -33,6 +40,7 @@ public partial class KnowledgeBaseViewModel(IKnowledgeBaseService knowledgeBaseS
         }
 
         HasResults = Articles.Count > 0;
+        HasPerformedSearch = true;
         StatusMessage = result.IsSuccess
             ? (HasResults ? $"{Articles.Count} artigo(s) encontrado(s)." : "Nenhum artigo encontrado para os filtros.")
             : result.Message;

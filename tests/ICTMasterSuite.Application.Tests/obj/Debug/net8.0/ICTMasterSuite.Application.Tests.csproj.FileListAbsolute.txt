@@ -217,3 +217,8 @@ C:\projetos\ICT_Master_Suite\tests\ICTMasterSuite.Application.Tests\bin\Debug\ne
 C:\projetos\ICT_Master_Suite\tests\ICTMasterSuite.Application.Tests\bin\Debug\net8.0\ICTMasterSuite.Infrastructure.dll
 C:\projetos\ICT_Master_Suite\tests\ICTMasterSuite.Application.Tests\bin\Debug\net8.0\ICTMasterSuite.Infrastructure.pdb
 C:\projetos\ICT_Master_Suite\tests\ICTMasterSuite.Application.Tests\obj\Debug\net8.0\ICTMasterSuite.Application.Tests.sourcelink.json
+c:\projetos\ICT_Master_Suite\tests\ICTMasterSuite.Application.Tests\bin\Debug\net8.0\Microsoft.Extensions.Configuration.Binder.dll
+c:\projetos\ICT_Master_Suite\tests\ICTMasterSuite.Application.Tests\bin\Debug\net8.0\Microsoft.Extensions.Diagnostics.dll
+c:\projetos\ICT_Master_Suite\tests\ICTMasterSuite.Application.Tests\bin\Debug\net8.0\Microsoft.Extensions.Diagnostics.Abstractions.dll
+c:\projetos\ICT_Master_Suite\tests\ICTMasterSuite.Application.Tests\bin\Debug\net8.0\Microsoft.Extensions.Http.dll
+c:\projetos\ICT_Master_Suite\tests\ICTMasterSuite.Application.Tests\bin\Debug\net8.0\Microsoft.Extensions.Options.ConfigurationExtensions.dll

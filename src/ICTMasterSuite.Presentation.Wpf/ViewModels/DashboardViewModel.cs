@@ -13,6 +13,7 @@ public partial class DashboardViewModel(GetDashboardSummaryUseCase useCase) : Ob
     [ObservableProperty] private int failCount;
     [ObservableProperty] private int passCount;
     [ObservableProperty] private string statusMessage = string.Empty;
+    [ObservableProperty] private bool hasTopSerials;
 
     public ObservableCollection<SerialRecurrenceDto> TopSerials { get; } = [];
 
@@ -23,6 +24,7 @@ public partial class DashboardViewModel(GetDashboardSummaryUseCase useCase) : Ob
         if (!result.IsSuccess || result.Value is null)
         {
             StatusMessage = result.Message;
+            HasTopSerials = false;
             return;
         }
 
@@ -32,6 +34,7 @@ public partial class DashboardViewModel(GetDashboardSummaryUseCase useCase) : Ob
         PassCount = result.Value.PassCount;
         TopSerials.Clear();
         foreach (var serial in result.Value.TopRecurringSerials) TopSerials.Add(serial);
+        HasTopSerials = TopSerials.Count > 0;
         StatusMessage = "Dashboard atualizado.";
     }
 

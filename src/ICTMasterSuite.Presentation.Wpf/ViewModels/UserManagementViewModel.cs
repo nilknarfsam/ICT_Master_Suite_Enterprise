@@ -16,7 +16,7 @@ public partial class UserManagementViewModel(IUserManagementService userManageme
     [ObservableProperty] private string usernameInput = string.Empty;
     [ObservableProperty] private string emailInput = string.Empty;
     [ObservableProperty] private string passwordInput = "ChangeMe@123";
-    [ObservableProperty] private string operationMessage = string.Empty;
+    [ObservableProperty] private string statusMessage = string.Empty;
 
     public async Task InitializeAsync()
     {
@@ -34,13 +34,13 @@ public partial class UserManagementViewModel(IUserManagementService userManageme
     {
         if (SelectedUser is null)
         {
-            OperationMessage = "Selecione um usuario com role para basear o novo cadastro.";
+            StatusMessage = "Selecione um usuario com role para basear o novo cadastro.";
             return;
         }
 
         var request = new CreateUserRequest(FullNameInput, UsernameInput, EmailInput, PasswordInput, SelectedUser.RoleId);
         var result = await userManagementService.CreateUserAsync(request);
-        OperationMessage = result.IsSuccess ? "Usuario criado com sucesso." : result.Message;
+        StatusMessage = result.IsSuccess ? "Usuario criado com sucesso." : result.Message;
         await RefreshAsync(SearchText);
     }
 
@@ -59,7 +59,7 @@ public partial class UserManagementViewModel(IUserManagementService userManageme
             EmailInput,
             SelectedUser.RoleId));
 
-        OperationMessage = result.IsSuccess ? "Usuario atualizado." : result.Message;
+        StatusMessage = result.IsSuccess ? "Usuario atualizado." : result.Message;
         await RefreshAsync(SearchText);
     }
 
@@ -72,7 +72,7 @@ public partial class UserManagementViewModel(IUserManagementService userManageme
         }
 
         var result = await userManagementService.SetUserActiveStatusAsync(SelectedUser.Id, !SelectedUser.IsActive);
-        OperationMessage = result.IsSuccess ? "Status alterado." : result.Message;
+        StatusMessage = result.IsSuccess ? "Status alterado." : result.Message;
         await RefreshAsync(SearchText);
     }
 

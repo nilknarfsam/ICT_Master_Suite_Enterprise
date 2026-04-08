@@ -36,6 +36,7 @@ public static class DependencyInjection
         services.AddScoped<ILogParserService, LogParserService>();
         services.AddScoped<IReportingService, ReportingService>();
         services.AddScoped<IDashboardService, DashboardService>();
+        services.AddHttpClient();
         services.AddScoped<IUpdaterService, UpdaterService>();
         services.AddScoped<ISystemConfigurationService, SystemConfigurationService>();
 

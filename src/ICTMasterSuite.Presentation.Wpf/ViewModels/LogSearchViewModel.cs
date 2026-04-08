@@ -24,6 +24,13 @@ public partial class LogSearchViewModel(
     [ObservableProperty] private string statusMessage = string.Empty;
     [ObservableProperty] private ParsedLog? selectedResult;
     [ObservableProperty] private bool hasPreviousHistory;
+    [ObservableProperty] private bool showFinderEmptyState = true;
+
+    public bool ShowFinderEmptyBanner => ShowFinderEmptyState && !IsLoading;
+
+    partial void OnIsLoadingChanged(bool value) => OnPropertyChanged(nameof(ShowFinderEmptyBanner));
+
+    partial void OnShowFinderEmptyStateChanged(bool value) => OnPropertyChanged(nameof(ShowFinderEmptyBanner));
 
     public event EventHandler<ParsedLog>? RegisterAnalysisRequested;
     public event EventHandler<string>? ViewHistoryRequested;
@@ -66,6 +73,7 @@ public partial class LogSearchViewModel(
         }
 
         IsLoading = true;
+        ShowFinderEmptyState = false;
         StatusMessage = "Pesquisando e analisando logs...";
         Results.Clear();
 
@@ -79,6 +87,7 @@ public partial class LogSearchViewModel(
         finderResultsState.Set(parsed);
 
         StatusMessage = $"{Results.Count} logs analisados.";
+        ShowFinderEmptyState = Results.Count == 0;
         IsLoading = false;
     }
 

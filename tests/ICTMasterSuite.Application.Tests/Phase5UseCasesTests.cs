@@ -62,7 +62,16 @@ public class Phase5UseCasesTests
 
     private sealed class FakeUpdaterService : IUpdaterService
     {
-        public Task<Result<VersionInfoDto>> CheckForUpdatesAsync(CancellationToken cancellationToken = default)
-            => Task.FromResult(Result<VersionInfoDto>.Success(new VersionInfoDto("1.0.0", "1.1.0", true, "notes", "https://example.com")));
+        public Task<Result<VersionInfoDto>> CheckForUpdatesAsync(UpdaterCheckRequest? request = null, CancellationToken cancellationToken = default)
+            => Task.FromResult(Result<VersionInfoDto>.Success(new VersionInfoDto(
+                "1.0.0",
+                "1.1.0",
+                true,
+                "notes",
+                "https://example.com",
+                UpdateCheckSource.RemoteFeed,
+                null,
+                null,
+                null)));
     }
 }

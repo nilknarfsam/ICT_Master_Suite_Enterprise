@@ -20,7 +20,7 @@ public interface IDashboardService
 
 public interface IUpdaterService
 {
-    Task<Result<VersionInfoDto>> CheckForUpdatesAsync(CancellationToken cancellationToken = default);
+    Task<Result<VersionInfoDto>> CheckForUpdatesAsync(UpdaterCheckRequest? request = null, CancellationToken cancellationToken = default);
 }
 
 public interface ISystemConfigurationService
