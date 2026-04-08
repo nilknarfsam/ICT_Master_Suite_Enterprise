@@ -2,32 +2,107 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="ICT Master Suite | Login"
-        Height="440"
-        Width="560"
+        Height="620"
+        Width="1040"
+        MinHeight="540"
+        MinWidth="860"
         WindowStartupLocation="CenterScreen"
-        ResizeMode="NoResize">
-    <Grid Margin="24">
-        <Border Background="{DynamicResource SurfaceBrush}" Padding="24" CornerRadius="10">
-            <StackPanel>
-                <TextBlock Text="Bem-vindo ao ICT Master Suite" Style="{DynamicResource TitleTextStyle}" />
-                <TextBlock Text="Acesso corporativo seguro" Foreground="{DynamicResource MutedTextBrush}" Margin="0,4,0,20" />
+        ResizeMode="CanResize">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
 
-                <TextBlock Text="Username" />
-                <TextBox Margin="0,6,0,12" Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" />
-
-                <TextBlock Text="Senha" />
-                <PasswordBox x:Name="PasswordInput" Margin="0,6,0,12" PasswordChanged="PasswordInput_OnPasswordChanged" />
-
-                <CheckBox IsChecked="{Binding RememberMe}" Content="Remember me" Margin="0,0,0,12" />
-                <TextBlock Text="{Binding ErrorMessage}" Foreground="#FFFB7185" TextWrapping="Wrap" Margin="0,0,0,12" />
-
-                <Button Height="38"
-                        Content="Entrar"
-                        Command="{Binding SignInCommand}"
-                        Background="{DynamicResource AccentBrush}"
-                        Foreground="#FF0F172A"
-                        FontWeight="Bold" />
-            </StackPanel>
+        <Border Grid.Column="0">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#FF0F172A" Offset="0" />
+                    <GradientStop Color="#FF0EA5E9" Offset="0.45" />
+                    <GradientStop Color="#FF6366F1" Offset="1" />
+                </LinearGradientBrush>
+            </Border.Background>
+            <Grid Margin="56">
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="ICT Master Suite"
+                               FontSize="40"
+                               FontWeight="Bold"
+                               Foreground="#FFF8FAFC" />
+                    <TextBlock Text="Plataforma de Inteligência Técnica"
+                               Margin="0,14,0,0"
+                               FontSize="20"
+                               Foreground="#FFE2E8F0" />
+                    <TextBlock Margin="0,22,0,0"
+                               TextWrapping="Wrap"
+                               FontSize="14"
+                               Foreground="#FFCBD5E1"
+                               Text="Rastreabilidade de falhas, histórico técnico consolidado e base de conhecimento corporativa para decisões ágeis e padronizadas." />
+                </StackPanel>
+            </Grid>
         </Border>
+
+        <Grid Grid.Column="1" Background="{DynamicResource AppBackgroundBrush}">
+            <Border Style="{DynamicResource LoginCardStyle}"
+                    MaxWidth="430"
+                    Margin="32"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center">
+                <Border.Effect>
+                    <DropShadowEffect Color="#AA020617" BlurRadius="24" ShadowDepth="0" Opacity="0.35" />
+                </Border.Effect>
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Margin="0,0,0,18">
+                        <TextBlock Text="Acessar plataforma" Style="{DynamicResource TitleTextStyle}" />
+                        <TextBlock Text="Use suas credenciais corporativas"
+                                   Margin="0,6,0,0"
+                                   Foreground="{DynamicResource MutedTextBrush}" />
+                    </StackPanel>
+
+                    <TextBlock Grid.Row="1" Text="Usuário" Style="{DynamicResource LoginLabelTextStyle}" />
+                    <TextBox Grid.Row="2"
+                             Style="{DynamicResource LoginInputTextBoxStyle}"
+                             Margin="0,0,0,12"
+                             Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" />
+
+                    <TextBlock Grid.Row="3" Text="Senha" Style="{DynamicResource LoginLabelTextStyle}" />
+                    <PasswordBox Grid.Row="4"
+                                 x:Name="PasswordInput"
+                                 Style="{DynamicResource LoginInputPasswordBoxStyle}"
+                                 Margin="0,0,0,14"
+                                 PasswordChanged="PasswordInput_OnPasswordChanged" />
+
+                    <CheckBox Grid.Row="5"
+                              Style="{DynamicResource LoginCheckBoxStyle}"
+                              IsChecked="{Binding RememberMe}"
+                              Content="Remember me" />
+
+                    <StackPanel Grid.Row="6" Margin="0,14,0,0">
+                        <Button Content="Entrar"
+                                Style="{DynamicResource LoginPrimaryButtonStyle}"
+                                Command="{Binding SignInCommand}" />
+                        <Border Margin="0,10,0,0"
+                                Padding="10,8"
+                                CornerRadius="8"
+                                Background="#14FB7185">
+                            <TextBlock Text="{Binding ErrorMessage}"
+                                       Foreground="#FFFDA4AF"
+                                       FontSize="12"
+                                       TextWrapping="Wrap" />
+                        </Border>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
     </Grid>
 </Window>

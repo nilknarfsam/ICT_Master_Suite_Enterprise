@@ -176,3 +176,7 @@ Microsoft.Data.SqlClient.SqlException (0x80131904): A network-related or instanc
 ClientConnectionId:00000000-0000-0000-0000-000000000000
 Error Number:-1,State:0,Class:20
 2026-04-08 11:07:38.627 -04:00 [INF] Application is shutting down...
+2026-04-08 11:13:12.865 -04:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-04-08 11:13:12.887 -04:00 [INF] Hosting environment: Production
+2026-04-08 11:13:12.887 -04:00 [INF] Content root path: C:\projetos\ICT_Master_Suite
+2026-04-08 11:15:12.261 -04:00 [INF] Application is shutting down...
