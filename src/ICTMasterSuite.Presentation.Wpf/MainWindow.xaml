@@ -114,7 +114,10 @@
                             <DataGridTextColumn Header="Resultado" Binding="{Binding Result}" Width="100" />
                             <DataGridTextColumn Header="Serial" Binding="{Binding SerialNumber}" Width="150" />
                             <DataGridTextColumn Header="Modelo" Binding="{Binding Model}" Width="150" />
+                            <DataGridTextColumn Header="Estação" Binding="{Binding Station}" Width="130" />
+                            <DataGridTextColumn Header="Timestamp" Binding="{Binding LogTimestamp}" Width="160" />
                             <DataGridTextColumn Header="Erro" Binding="{Binding ErrorCode}" Width="120" />
+                            <DataGridTextColumn Header="Descrição Erro" Binding="{Binding ErrorDescription}" Width="2*" />
                             <DataGridTextColumn Header="Resumo" Binding="{Binding Summary}" Width="2*" />
                         </DataGrid.Columns>
                     </DataGrid>

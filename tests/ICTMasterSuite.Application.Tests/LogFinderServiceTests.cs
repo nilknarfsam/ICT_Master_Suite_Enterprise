@@ -32,4 +32,28 @@ public class LogFinderServiceTests
             Directory.Delete(root, true);
         }
     }
+
+    [Fact]
+    public async Task SearchAsync_ShouldAvoidDuplicatesWhenDirectoriesOverlap()
+    {
+        var root = Path.Combine(Path.GetTempPath(), $"ict-finder-overlap-{Guid.NewGuid():N}");
+        var sub = Path.Combine(root, "sub");
+        Directory.CreateDirectory(sub);
+
+        try
+        {
+            var valid = Path.Combine(sub, "tri_fail_01.log");
+            await File.WriteAllTextAsync(valid, "dummy");
+
+            var service = new LogFinderService();
+            var result = await service.SearchAsync("fail", [root, sub]);
+
+            Assert.Single(result);
+            Assert.Equal(Path.GetFullPath(valid), result.First().FullPath);
+        }
+        finally
+        {
+            Directory.Delete(root, true);
+        }
+    }
 }
