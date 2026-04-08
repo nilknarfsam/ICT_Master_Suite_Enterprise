@@ -13,13 +13,21 @@ public partial class MainWindowViewModel(
     UserManagementViewModel userManagementViewModel,
     LogSearchViewModel logSearchViewModel,
     TechnicalHistoryViewModel technicalHistoryViewModel,
-    KnowledgeBaseViewModel knowledgeBaseViewModel) : ObservableObject
+    KnowledgeBaseViewModel knowledgeBaseViewModel,
+    DashboardViewModel dashboardViewModel,
+    ReportsViewModel reportsViewModel,
+    SystemSettingsViewModel systemSettingsViewModel,
+    UpdaterViewModel updaterViewModel) : ObservableObject
 {
     public IReadOnlyCollection<ModuleNavigationItemViewModel> Modules { get; private set; } = [];
     public UserManagementViewModel UserManagement { get; } = userManagementViewModel;
     public LogSearchViewModel LogSearch { get; } = logSearchViewModel;
     public TechnicalHistoryViewModel TechnicalHistory { get; } = technicalHistoryViewModel;
     public KnowledgeBaseViewModel KnowledgeBase { get; } = knowledgeBaseViewModel;
+    public DashboardViewModel Dashboard { get; } = dashboardViewModel;
+    public ReportsViewModel Reports { get; } = reportsViewModel;
+    public SystemSettingsViewModel Settings { get; } = systemSettingsViewModel;
+    public UpdaterViewModel Updater { get; } = updaterViewModel;
 
     [ObservableProperty]
     private ModuleNavigationItemViewModel? selectedModule;
@@ -40,6 +48,9 @@ public partial class MainWindowViewModel(
         Modules = await BuildModulesAsync(authenticatedUserState.Current.UserId);
         SelectedModule = Modules.FirstOrDefault();
         await UserManagement.InitializeAsync();
+        await Dashboard.RefreshDataAsync();
+        await Settings.LoadAsync();
+        await Updater.CheckUpdatesAsync();
     }
 
     [RelayCommand]
@@ -61,9 +72,9 @@ public partial class MainWindowViewModel(
             new(SystemModule.TechnicalHistory, "Historico Tecnico", "Linha do tempo de eventos e manutencoes."),
             new(SystemModule.KnowledgeBase, "Base de Conhecimento", "Conteudo tecnico estruturado para consulta."),
             new(SystemModule.SystemSettings, "Configuracoes do Sistema", "Parametros globais e preferencia por ambiente."),
-            new(SystemModule.Export, "Exportacao Excel/PDF", "Saidas corporativas para auditoria e reporting."),
-            new(SystemModule.Audit, "Auditoria", "Rastreabilidade de acoes sensiveis do sistema."),
-            new(SystemModule.OfflineSync, "Sync Offline (Futuro)", "Base preparada para sincronizacao em campo.")
+            new(SystemModule.Export, "Relatorios e Exportacao", "Saidas corporativas em Excel e PDF."),
+            new(SystemModule.Audit, "Dashboard Executivo", "Indicadores tecnicos e monitoramento resumido."),
+            new(SystemModule.OfflineSync, "Updater Enterprise", "Verificacao de versao e fluxo de atualizacao desacoplado.")
         };
 
         var filtered = new List<ModuleNavigationItemViewModel>();

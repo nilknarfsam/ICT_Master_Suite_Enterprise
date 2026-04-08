@@ -232,8 +232,147 @@
                         </Border>
                     </Grid>
                 </Grid>
+                <Grid Margin="0,16,0,0" Visibility="{Binding SelectedModule.Module, Converter={StaticResource ModuleVisibilityConverter}, ConverterParameter=Export}">
+                    <Border Style="{DynamicResource PremiumCardStyle}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="Relatórios Técnicos" Style="{DynamicResource SectionTitleTextStyle}" />
+
+                            <StackPanel Grid.Row="1" Margin="0,10,0,0" Orientation="Horizontal">
+                                <TextBox Width="220" Text="{Binding Reports.SerialInput, UpdateSourceTrigger=PropertyChanged}" />
+                                <Button Margin="8,0,0,0" Style="{DynamicResource SoftButtonStyle}" Content="Histórico Excel" Command="{Binding Reports.ExportTechnicalHistoryExcelCommand}" />
+                                <Button Margin="8,0,0,0" Style="{DynamicResource SoftButtonStyle}" Content="Histórico PDF" Command="{Binding Reports.ExportTechnicalHistoryPdfCommand}" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="2" Margin="0,10,0,0" Orientation="Horizontal">
+                                <TextBox Width="130" Text="{Binding Reports.ModelFilter, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBox Margin="8,0,0,0" Width="130" Text="{Binding Reports.PhaseFilter, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBox Margin="8,0,0,0" Width="200" Text="{Binding Reports.TermFilter, UpdateSourceTrigger=PropertyChanged}" />
+                                <Button Margin="8,0,0,0" Style="{DynamicResource SoftButtonStyle}" Content="Base Excel" Command="{Binding Reports.ExportKnowledgeBaseExcelCommand}" />
+                                <Button Margin="8,0,0,0" Style="{DynamicResource SoftButtonStyle}" Content="Base PDF" Command="{Binding Reports.ExportKnowledgeBasePdfCommand}" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="3" Margin="0,10,0,0" Orientation="Horizontal">
+                                <Button Style="{DynamicResource SoftButtonStyle}" Content="Finder Excel" Command="{Binding Reports.ExportFinderExcelCommand}" />
+                                <Button Margin="8,0,0,0" Style="{DynamicResource SoftButtonStyle}" Content="Finder PDF" Command="{Binding Reports.ExportFinderPdfCommand}" />
+                                <TextBlock Margin="12,6,0,0" Foreground="{DynamicResource MutedTextBrush}" Text="{Binding Reports.StatusMessage}" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </Grid>
+                <Grid Margin="0,16,0,0" Visibility="{Binding SelectedModule.Module, Converter={StaticResource ModuleVisibilityConverter}, ConverterParameter=Audit}">
+                    <StackPanel>
+                        <TextBlock Text="Dashboard Executivo/Técnico" Style="{DynamicResource SectionTitleTextStyle}" />
+                        <WrapPanel Margin="0,10,0,0">
+                            <Border Style="{DynamicResource PremiumCardStyle}" Width="230" Margin="0,0,10,10">
+                                <StackPanel>
+                                    <TextBlock Text="Análises Técnicas" Foreground="{DynamicResource MutedTextBrush}" />
+                                    <TextBlock Text="{Binding Dashboard.TotalAnalyses}" FontSize="30" FontWeight="Bold" />
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{DynamicResource PremiumCardStyle}" Width="230" Margin="0,0,10,10">
+                                <StackPanel>
+                                    <TextBlock Text="Artigos Ativos" Foreground="{DynamicResource MutedTextBrush}" />
+                                    <TextBlock Text="{Binding Dashboard.ActiveArticles}" FontSize="30" FontWeight="Bold" />
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{DynamicResource PremiumCardStyle}" Width="230" Margin="0,0,10,10">
+                                <StackPanel>
+                                    <TextBlock Text="FAIL / PASS" Foreground="{DynamicResource MutedTextBrush}" />
+                                    <TextBlock Text="{Binding Dashboard.FailCount}" FontSize="24" FontWeight="Bold" Foreground="#FFF87171" />
+                                    <TextBlock Text="{Binding Dashboard.PassCount}" FontSize="24" FontWeight="Bold" Foreground="#FF4ADE80" />
+                                </StackPanel>
+                            </Border>
+                        </WrapPanel>
+                        <Border Style="{DynamicResource PremiumCardStyle}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <DockPanel>
+                                    <TextBlock Text="Seriais com maior reincidência" Style="{DynamicResource SectionTitleTextStyle}" />
+                                    <Button DockPanel.Dock="Right" Style="{DynamicResource SoftButtonStyle}" Content="Atualizar" Command="{Binding Dashboard.RefreshCommand}" />
+                                </DockPanel>
+                                <DataGrid Grid.Row="1" Margin="0,10,0,0" ItemsSource="{Binding Dashboard.TopSerials}" AutoGenerateColumns="False" IsReadOnly="True">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Serial" Binding="{Binding SerialNumber}" Width="*" />
+                                        <DataGridTextColumn Header="Ocorrências" Binding="{Binding Occurrences}" Width="130" />
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Grid>
+                        </Border>
+                        <TextBlock Margin="0,8,0,0" Text="{Binding Dashboard.StatusMessage}" Foreground="{DynamicResource MutedTextBrush}" />
+                    </StackPanel>
+                </Grid>
+                <Grid Margin="0,16,0,0" Visibility="{Binding SelectedModule.Module, Converter={StaticResource ModuleVisibilityConverter}, ConverterParameter=SystemSettings}">
+                    <Border Style="{DynamicResource PremiumCardStyle}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="Configurações do Sistema" Style="{DynamicResource SectionTitleTextStyle}" />
+                            <Grid Grid.Row="1" Margin="0,10,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock Text="Diretórios Finder (separados por ;)" />
+                                    <TextBox Text="{Binding Settings.FinderDirectories, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,8" />
+                                    <TextBlock Text="Endpoint Updater" />
+                                    <TextBox Text="{Binding Settings.UpdaterEndpoint, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,8" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Margin="12,0,0,0">
+                                    <CheckBox Content="Auto check updates" IsChecked="{Binding Settings.AutoCheckUpdates}" />
+                                    <CheckBox Margin="0,8,0,0" Content="Auto abrir último módulo" IsChecked="{Binding Settings.AutoOpenLastModule}" />
+                                    <TextBlock Margin="0,10,0,0" Text="Tema preferido (Dark/Light)" />
+                                    <TextBox Text="{Binding Settings.PreferredTheme, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,8" />
+                                </StackPanel>
+                            </Grid>
+                            <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,8,0,0">
+                                <Button Style="{DynamicResource SoftButtonStyle}" Content="Recarregar" Command="{Binding Settings.LoadCommand}" />
+                                <Button Margin="8,0,0,0" Style="{DynamicResource SoftButtonStyle}" Content="Salvar configurações" Command="{Binding Settings.SaveCommand}" />
+                            </StackPanel>
+                            <TextBlock Grid.Row="3" Margin="0,8,0,0" Text="{Binding Settings.StatusMessage}" Foreground="{DynamicResource MutedTextBrush}" />
+                        </Grid>
+                    </Border>
+                </Grid>
+                <Grid Margin="0,16,0,0" Visibility="{Binding SelectedModule.Module, Converter={StaticResource ModuleVisibilityConverter}, ConverterParameter=OfflineSync}">
+                    <Border Style="{DynamicResource PremiumCardStyle}">
+                        <StackPanel>
+                            <TextBlock Text="Updater Enterprise" Style="{DynamicResource SectionTitleTextStyle}" />
+                            <TextBlock Margin="0,8,0,0" Text="{Binding Updater.CurrentVersion, StringFormat='Versão atual: {0}'}" />
+                            <TextBlock Text="{Binding Updater.LatestVersion, StringFormat='Última versão: {0}'}" />
+                            <TextBlock Text="{Binding Updater.ReleaseNotes}" TextWrapping="Wrap" Margin="0,8,0,0" Foreground="{DynamicResource MutedTextBrush}" />
+                            <TextBlock Text="{Binding Updater.DownloadUrl}" TextWrapping="Wrap" Foreground="{DynamicResource AccentBrush}" />
+                            <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
+                                <Button Style="{DynamicResource SoftButtonStyle}" Content="Verificar atualização" Command="{Binding Updater.CheckCommand}" />
+                                <TextBlock Margin="12,6,0,0" Text="{Binding Updater.StatusMessage}" Foreground="{DynamicResource MutedTextBrush}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Grid>
                 <TextBlock Margin="0,8,0,0"
+                           Visibility="{Binding SelectedModule.Module, Converter={StaticResource ModuleVisibilityConverter}, ConverterParameter=LogFinder}"
                            Text="{Binding LogSearch.StatusMessage}"
+                           Foreground="{DynamicResource PrimaryTextBrush}" />
+                <TextBlock Margin="0,8,0,0"
+                           Visibility="{Binding SelectedModule.Module, Converter={StaticResource ModuleVisibilityConverter}, ConverterParameter=TechnicalHistory}"
+                           Text="{Binding TechnicalHistory.StatusMessage}"
+                           Foreground="{DynamicResource PrimaryTextBrush}" />
+                <TextBlock Margin="0,8,0,0"
+                           Visibility="{Binding SelectedModule.Module, Converter={StaticResource ModuleVisibilityConverter}, ConverterParameter=KnowledgeBase}"
+                           Text="{Binding KnowledgeBase.StatusMessage}"
                            Foreground="{DynamicResource PrimaryTextBrush}" />
             </StackPanel>
         </Border>

@@ -24,5 +24,10 @@ public interface ICurrentUserContext
 
 public interface IAuditLogger
 {
-    Task<Result> WriteAsync(string action, string details, CancellationToken cancellationToken = default);
+    Task<Result> WriteAsync(
+        string action,
+        string details,
+        CancellationToken cancellationToken = default,
+        string? module = null,
+        string? user = null);
 }

@@ -93,6 +93,8 @@ dotnet run --project src/ICTMasterSuite.Presentation.Wpf
 
 ### Fase 5 - Relatorios, Updater e Refinamento Premium
 
-- Exportacao corporativa Excel e PDF
-- Refino visual dark/light completo
-- Telemetria, hardening, instalador/updater e readiness para sync offline
+- Modulo de relatorios tecnicos com exportacao de Historico, Base de Conhecimento e Finder em Excel/PDF
+- Dashboard executivo/tecnico com indicadores e serials de maior reincidencia
+- Updater enterprise desacoplado com checagem de versao e tolerancia a falhas
+- Configuracoes persistidas em banco para finder, updater e preferencias operacionais
+- Auditoria enriquecida com contexto de modulo/usuario/acao e UX final refinada por modulo

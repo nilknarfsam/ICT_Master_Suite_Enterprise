@@ -4,6 +4,7 @@ using ICTMasterSuite.Application.Abstractions.Services;
 using ICTMasterSuite.Application.Logs.Dtos;
 using ICTMasterSuite.Application.Logs.UseCases;
 using ICTMasterSuite.Domain.Entities;
+using ICTMasterSuite.Presentation.Wpf.Services;
 using System.IO;
 using System.Collections.ObjectModel;
 
@@ -11,7 +12,8 @@ namespace ICTMasterSuite.Presentation.Wpf.ViewModels;
 
 public partial class LogSearchViewModel(
     SearchLogsWithAnalysisUseCase useCase,
-    ITechnicalHistoryService technicalHistoryService) : ObservableObject
+    ITechnicalHistoryService technicalHistoryService,
+    FinderResultsState finderResultsState) : ObservableObject
 {
     public ObservableCollection<string> Directories { get; } = [];
     public ObservableCollection<ParsedLog> Results { get; } = [];
@@ -74,6 +76,7 @@ public partial class LogSearchViewModel(
         {
             Results.Add(item);
         }
+        finderResultsState.Set(parsed);
 
         StatusMessage = $"{Results.Count} logs analisados.";
         IsLoading = false;

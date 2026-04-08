@@ -12,5 +12,6 @@ public interface IAppDbContext
     DbSet<UserSession> UserSessions { get; }
     DbSet<TechnicalAnalysis> TechnicalAnalyses { get; }
     DbSet<KnowledgeBaseArticle> KnowledgeBaseArticles { get; }
+    DbSet<SystemSetting> SystemSettings { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

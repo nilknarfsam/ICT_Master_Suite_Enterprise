@@ -17,6 +17,7 @@ public sealed class IctMasterSuiteDbContext : DbContext, IAppDbContext
     public DbSet<UserSession> UserSessions => Set<UserSession>();
     public DbSet<TechnicalAnalysis> TechnicalAnalyses => Set<TechnicalAnalysis>();
     public DbSet<KnowledgeBaseArticle> KnowledgeBaseArticles => Set<KnowledgeBaseArticle>();
+    public DbSet<SystemSetting> SystemSettings => Set<SystemSetting>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -93,6 +94,16 @@ public sealed class IctMasterSuiteDbContext : DbContext, IAppDbContext
             entity.Property(x => x.Solution).HasMaxLength(4000).IsRequired();
             entity.Property(x => x.Author).HasMaxLength(120).IsRequired();
             entity.HasIndex(x => new { x.Model, x.TestPhase });
+        });
+
+        modelBuilder.Entity<SystemSetting>(entity =>
+        {
+            entity.ToTable("SystemSettings");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.Category).HasMaxLength(80).IsRequired();
+            entity.Property(x => x.Key).HasMaxLength(120).IsRequired();
+            entity.Property(x => x.Value).HasMaxLength(4000).IsRequired();
+            entity.HasIndex(x => new { x.Category, x.Key }).IsUnique();
         });
 
         SeedData.Apply(modelBuilder);

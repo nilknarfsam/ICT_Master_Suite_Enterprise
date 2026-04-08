@@ -47,4 +47,9 @@ public sealed class KnowledgeBaseArticleRepository(IctMasterSuiteDbContext dbCon
 
         return await query.OrderByDescending(x => x.CreatedAt).ToListAsync(cancellationToken);
     }
+
+    public Task<int> CountActiveAsync(CancellationToken cancellationToken = default)
+    {
+        return dbContext.KnowledgeBaseArticles.CountAsync(x => x.IsActive, cancellationToken);
+    }
 }

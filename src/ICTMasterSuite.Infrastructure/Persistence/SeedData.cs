@@ -22,6 +22,13 @@ internal static class SeedData
 
         modelBuilder.Entity<Permission>().HasData(permissions);
         modelBuilder.Entity<RolePermission>().HasData(rolePermissions);
+        modelBuilder.Entity<SystemSetting>().HasData(
+            new { Id = Guid.Parse("E67A95C8-FC91-47A4-A358-F8EE7DBB7B3B"), Category = "Finder", Key = "Directories", Value = "", CreatedAt = DateTime.UtcNow },
+            new { Id = Guid.Parse("A7EC39FE-48E4-4785-B32B-9A264F71AF05"), Category = "Updater", Key = "Endpoint", Value = "", CreatedAt = DateTime.UtcNow },
+            new { Id = Guid.Parse("A0CF593A-E9A4-4C54-9E59-F9CD65C50370"), Category = "Updater", Key = "AutoCheck", Value = "True", CreatedAt = DateTime.UtcNow },
+            new { Id = Guid.Parse("862954D8-EE99-4006-BE15-6DCE18609376"), Category = "UI", Key = "Theme", Value = "Dark", CreatedAt = DateTime.UtcNow },
+            new { Id = Guid.Parse("5A73B376-4E9B-4F79-99E6-2CF1D37D8A8B"), Category = "UI", Key = "AutoOpenLastModule", Value = "True", CreatedAt = DateTime.UtcNow }
+        );
 
         var adminPasswordHash = PasswordHasher.HashStatic("Admin@123");
         modelBuilder.Entity<User>().HasData(new

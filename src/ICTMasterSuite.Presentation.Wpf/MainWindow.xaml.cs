@@ -51,6 +51,7 @@ public partial class MainWindow : Window
     {
         _viewModel.NavigateToModule(Domain.Enums.SystemModule.KnowledgeBase);
         await _viewModel.KnowledgeBase.SearchRelatedAsync(query.Model, query.Term);
+        _viewModel.Reports.ApplyKnowledgeFilter(query.Model, query.Term);
     }
 
     private void OnRegisterAnalysisRequested(object? sender, Domain.Entities.ParsedLog log)

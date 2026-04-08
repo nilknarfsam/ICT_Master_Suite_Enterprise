@@ -28,4 +28,17 @@ public sealed class TechnicalAnalysisRepository(IctMasterSuiteDbContext dbContex
             .OrderByDescending(x => x.CreatedAt)
             .FirstOrDefaultAsync(cancellationToken);
     }
+
+    public async Task<IReadOnlyCollection<TechnicalAnalysis>> ListAllAsync(CancellationToken cancellationToken = default)
+    {
+        return await dbContext.TechnicalAnalyses
+            .AsNoTracking()
+            .OrderByDescending(x => x.CreatedAt)
+            .ToListAsync(cancellationToken);
+    }
+
+    public Task<int> CountAsync(CancellationToken cancellationToken = default)
+    {
+        return dbContext.TechnicalAnalyses.CountAsync(cancellationToken);
+    }
 }

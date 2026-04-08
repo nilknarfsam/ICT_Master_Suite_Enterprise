@@ -41,12 +41,17 @@ public partial class App : System.Windows.Application
                 services.AddInfrastructure(context.Configuration);
                 services.AddSingleton<ThemeService>();
                 services.AddSingleton<AuthenticatedUserState>();
+                services.AddSingleton<FinderResultsState>();
                 services.AddTransient<LoginViewModel>();
                 services.AddTransient<LoginWindow>();
                 services.AddTransient<UserManagementViewModel>();
-                services.AddTransient<LogSearchViewModel>();
+                services.AddSingleton<LogSearchViewModel>();
                 services.AddTransient<TechnicalHistoryViewModel>();
                 services.AddTransient<KnowledgeBaseViewModel>();
+                services.AddTransient<DashboardViewModel>();
+                services.AddTransient<ReportsViewModel>();
+                services.AddTransient<SystemSettingsViewModel>();
+                services.AddTransient<UpdaterViewModel>();
                 services.AddTransient<RegisterAnalysisViewModel>();
                 services.AddTransient<RegisterAnalysisWindow>();
                 services.AddSingleton<MainWindowViewModel>();

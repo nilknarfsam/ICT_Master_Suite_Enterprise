@@ -28,11 +28,16 @@ public static class DependencyInjection
         services.AddScoped<IRoleRepository, RoleRepository>();
         services.AddScoped<ITechnicalAnalysisRepository, TechnicalAnalysisRepository>();
         services.AddScoped<IKnowledgeBaseArticleRepository, KnowledgeBaseArticleRepository>();
+        services.AddScoped<ISystemSettingRepository, SystemSettingRepository>();
         services.AddScoped<IPasswordHasher, PasswordHasher>();
         services.AddSingleton<ISessionStore, InMemorySessionStore>();
         services.AddScoped<IAuditLogger, AuditLogger>();
         services.AddScoped<ILogFinderService, LogFinderService>();
         services.AddScoped<ILogParserService, LogParserService>();
+        services.AddScoped<IReportingService, ReportingService>();
+        services.AddScoped<IDashboardService, DashboardService>();
+        services.AddScoped<IUpdaterService, UpdaterService>();
+        services.AddScoped<ISystemConfigurationService, SystemConfigurationService>();
 
         return services;
     }
