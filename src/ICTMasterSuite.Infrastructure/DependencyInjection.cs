@@ -2,6 +2,7 @@ using ICTMasterSuite.Application.Abstractions.Infrastructure;
 using ICTMasterSuite.Application.Abstractions.Persistence;
 using ICTMasterSuite.Application.Abstractions.Security;
 using ICTMasterSuite.Application.Abstractions.Services;
+using ICTMasterSuite.Application.Abstractions.Updater;
 using ICTMasterSuite.Infrastructure.Persistence;
 using ICTMasterSuite.Infrastructure.Persistence.Repositories;
 using ICTMasterSuite.Infrastructure.Security;
@@ -36,7 +37,12 @@ public static class DependencyInjection
         services.AddScoped<ILogParserService, LogParserService>();
         services.AddScoped<IReportingService, ReportingService>();
         services.AddScoped<IDashboardService, DashboardService>();
-        services.AddHttpClient();
+        services.AddSingleton<ICurrentApplicationVersionProvider, ReflectionCurrentApplicationVersionProvider>();
+        services.AddHttpClient<IUpdateFeedClient, UpdateFeedClient>((_, client) =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(20);
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("ICT-Master-Suite-Updater/1.0");
+        });
         services.AddScoped<IUpdaterService, UpdaterService>();
         services.AddScoped<ISystemConfigurationService, SystemConfigurationService>();
 

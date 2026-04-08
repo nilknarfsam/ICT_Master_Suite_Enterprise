@@ -11,6 +11,8 @@
           "FluentAssertions": "8.9.0",
           "ICTMasterSuite.Application": "1.0.0",
           "ICTMasterSuite.Infrastructure": "1.0.0",
+          "Microsoft.Extensions.Configuration.Abstractions": "10.0.5",
+          "Microsoft.Extensions.Primitives": "10.0.5",
           "Microsoft.NET.Test.Sdk": "17.8.0",
           "coverlet.collector": "6.0.0",
           "xunit": "2.5.3",
