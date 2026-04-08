@@ -1,6 +1,7 @@
 using ICTMasterSuite.Application.Abstractions.Infrastructure;
 using ICTMasterSuite.Application.Abstractions.Persistence;
 using ICTMasterSuite.Application.Abstractions.Security;
+using ICTMasterSuite.Application.Abstractions.Services;
 using ICTMasterSuite.Infrastructure.Persistence;
 using ICTMasterSuite.Infrastructure.Persistence.Repositories;
 using ICTMasterSuite.Infrastructure.Security;
@@ -28,6 +29,8 @@ public static class DependencyInjection
         services.AddScoped<IPasswordHasher, PasswordHasher>();
         services.AddSingleton<ISessionStore, InMemorySessionStore>();
         services.AddScoped<IAuditLogger, AuditLogger>();
+        services.AddScoped<ILogFinderService, LogFinderService>();
+        services.AddScoped<ILogParserService, LogParserService>();
 
         return services;
     }

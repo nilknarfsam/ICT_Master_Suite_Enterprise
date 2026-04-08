@@ -8,7 +8,7 @@
                 <ResourceDictionary Source="Themes/Colors.Light.xaml" />
                 <ResourceDictionary Source="Themes/Theme.Base.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            <converters:UsersModuleVisibilityConverter x:Key="UsersModuleVisibilityConverter" />
+            <converters:ModuleVisibilityConverter x:Key="ModuleVisibilityConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

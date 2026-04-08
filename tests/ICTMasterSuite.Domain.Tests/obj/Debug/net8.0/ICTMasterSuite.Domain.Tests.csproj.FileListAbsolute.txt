@@ -100,3 +100,4 @@ C:\projetos\ICT_Master_Suite\tests\ICTMasterSuite.Domain.Tests\obj\Debug\net8.0\
 C:\projetos\ICT_Master_Suite\tests\ICTMasterSuite.Domain.Tests\obj\Debug\net8.0\ICTMasterSuite.Domain.Tests.pdb
 C:\projetos\ICT_Master_Suite\tests\ICTMasterSuite.Domain.Tests\obj\Debug\net8.0\ICTMasterSuite.Domain.Tests.genruntimeconfig.cache
 C:\projetos\ICT_Master_Suite\tests\ICTMasterSuite.Domain.Tests\obj\Debug\net8.0\ref\ICTMasterSuite.Domain.Tests.dll
+C:\projetos\ICT_Master_Suite\tests\ICTMasterSuite.Domain.Tests\obj\Debug\net8.0\ICTMasterSuite.Domain.Tests.sourcelink.json

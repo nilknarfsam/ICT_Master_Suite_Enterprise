@@ -165,3 +165,4 @@ C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Presentation.Wpf\obj\Debug\net8.
 C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Presentation.Wpf\obj\Debug\net8.0-windows\LoginWindow.g.cs
 C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Presentation.Wpf\obj\Debug\net8.0-windows\GeneratedInternalTypeHelper.g.cs
 C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Presentation.Wpf\obj\Debug\net8.0-windows\ICTMasterSuite.Presentation.Wpf_MarkupCompile.lref
+C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Presentation.Wpf\obj\Debug\net8.0-windows\ICTMasterSuite.Presentation.Wpf.sourcelink.json

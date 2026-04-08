@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\ICTMasterSuite.Application\ICTMasterSuite.Application.csproj" />
+    <ProjectReference Include="..\..\src\ICTMasterSuite.Infrastructure\ICTMasterSuite.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

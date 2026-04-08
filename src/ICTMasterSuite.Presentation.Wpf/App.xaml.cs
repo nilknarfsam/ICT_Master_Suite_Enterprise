@@ -42,6 +42,7 @@ public partial class App : System.Windows.Application
                 services.AddTransient<LoginViewModel>();
                 services.AddTransient<LoginWindow>();
                 services.AddTransient<UserManagementViewModel>();
+                services.AddTransient<LogSearchViewModel>();
                 services.AddSingleton<MainWindowViewModel>();
                 services.AddSingleton<MainWindow>();
             })

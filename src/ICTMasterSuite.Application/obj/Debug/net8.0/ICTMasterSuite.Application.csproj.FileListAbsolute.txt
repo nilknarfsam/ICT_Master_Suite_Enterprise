@@ -13,3 +13,4 @@ C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Application\obj\Debug\net8.0\ICT
 C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Application\obj\Debug\net8.0\refint\ICTMasterSuite.Application.dll
 C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Application\obj\Debug\net8.0\ICTMasterSuite.Application.pdb
 C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Application\obj\Debug\net8.0\ref\ICTMasterSuite.Application.dll
+C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Application\obj\Debug\net8.0\ICTMasterSuite.Application.sourcelink.json

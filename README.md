@@ -77,9 +77,11 @@ dotnet run --project src/ICTMasterSuite.Presentation.Wpf
 
 ### Fase 3 - Finder e Parser
 
-- Indexacao e busca de logs
-- Parser TRI e Agilent com pipeline validado
-- Persistencia de resultados para analise posterior
+- Finder desacoplado com busca recursiva por `Directory.EnumerateFiles`
+- Filtro de extensoes: `.csv`, `.dcl`, `.txt`, `.log`
+- Regras de exclusao: ignora arquivos com `pass` e prefixo `p_`
+- Parser TRI/Agilent com extracao basica (`serial`, `model`, `error`, `result`)
+- Use case `SearchLogsWithAnalysisUseCase` orquestrando busca + analise
 
 ### Fase 4 - Historico e Base de Conhecimento
 

@@ -34,7 +34,7 @@
             <StackPanel>
                 <TextBlock Text="{Binding SelectedModule.Title}" Style="{DynamicResource HeaderTextStyle}" />
                 <TextBlock Text="{Binding SelectedModule.Description}" Margin="0,8,0,16" Foreground="{DynamicResource MutedTextBrush}" />
-                <Grid Visibility="{Binding SelectedModule.Module, Converter={StaticResource UsersModuleVisibilityConverter}}">
+                <Grid Visibility="{Binding SelectedModule.Module, Converter={StaticResource ModuleVisibilityConverter}, ConverterParameter=UsersAndProfiles}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
@@ -76,8 +76,51 @@
                         </StackPanel>
                     </Grid>
                 </Grid>
+                <Grid Margin="0,16,0,0" Visibility="{Binding SelectedModule.Module, Converter={StaticResource ModuleVisibilityConverter}, ConverterParameter=LogFinder}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Orientation="Horizontal">
+                        <TextBox Width="220" Text="{Binding LogSearch.SearchTerm, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBox Margin="8,0,0,0" Width="380" Text="{Binding LogSearch.DirectoryInput, UpdateSourceTrigger=PropertyChanged}" />
+                        <Button Margin="8,0,0,0" Content="Adicionar Diretório" Command="{Binding LogSearch.AddDirectoryCommand}" />
+                        <Button Margin="8,0,0,0" Content="Pesquisar" Command="{Binding LogSearch.SearchCommand}" />
+                    </StackPanel>
+
+                    <ItemsControl Grid.Row="1" Margin="0,8,0,8" ItemsSource="{Binding LogSearch.Directories}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <DockPanel Margin="0,2,0,2">
+                                    <Button DockPanel.Dock="Right"
+                                            Content="X"
+                                            Command="{Binding DataContext.LogSearch.RemoveDirectoryCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                            CommandParameter="{Binding}" />
+                                    <TextBlock Text="{Binding}" Foreground="{DynamicResource MutedTextBrush}" />
+                                </DockPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <DataGrid Grid.Row="2"
+                              ItemsSource="{Binding LogSearch.Results}"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Arquivo" Binding="{Binding FileName}" Width="*" />
+                            <DataGridTextColumn Header="Tipo" Binding="{Binding SourceType}" Width="100" />
+                            <DataGridTextColumn Header="Resultado" Binding="{Binding Result}" Width="100" />
+                            <DataGridTextColumn Header="Serial" Binding="{Binding SerialNumber}" Width="150" />
+                            <DataGridTextColumn Header="Modelo" Binding="{Binding Model}" Width="150" />
+                            <DataGridTextColumn Header="Erro" Binding="{Binding ErrorCode}" Width="120" />
+                            <DataGridTextColumn Header="Resumo" Binding="{Binding Summary}" Width="2*" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
                 <TextBlock Margin="0,8,0,0"
-                           Text="Selecione o modulo de Usuarios para gestao completa nesta fase."
+                           Text="{Binding LogSearch.StatusMessage}"
                            Foreground="{DynamicResource PrimaryTextBrush}" />
             </StackPanel>
         </Border>

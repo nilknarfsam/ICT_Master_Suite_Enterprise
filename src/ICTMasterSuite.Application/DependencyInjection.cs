@@ -1,5 +1,6 @@
 using FluentValidation;
 using ICTMasterSuite.Application.Abstractions.Services;
+using ICTMasterSuite.Application.Logs.UseCases;
 using ICTMasterSuite.Application.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -13,6 +14,7 @@ public static class DependencyInjection
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IUserManagementService, UserManagementService>();
         services.AddScoped<IAuthorizationService, AuthorizationService>();
+        services.AddScoped<SearchLogsWithAnalysisUseCase>();
         return services;
     }
 }
