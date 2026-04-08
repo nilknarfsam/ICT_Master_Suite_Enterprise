@@ -85,9 +85,11 @@ dotnet run --project src/ICTMasterSuite.Presentation.Wpf
 
 ### Fase 4 - Historico e Base de Conhecimento
 
-- Registro tecnico por ativo/equipamento
-- Catalogo de procedimentos e falhas recorrentes
-- Pesquisa semantica inicial e ligacao com historico
+- Entidades `TechnicalAnalysis` e `KnowledgeBaseArticle` com repositorios dedicados
+- Casos de uso: salvar analise, consultar historico por serial, buscar base e criar artigo
+- Integracao Finder -> Registrar analise com pre-preenchimento automatico por `ParsedLog`
+- Alerta visual no Finder quando serial ja possui historico anterior
+- Modulo de Historico Tecnico e Base de Conhecimento no shell WPF
 
 ### Fase 5 - Relatorios, Updater e Refinamento Premium
 

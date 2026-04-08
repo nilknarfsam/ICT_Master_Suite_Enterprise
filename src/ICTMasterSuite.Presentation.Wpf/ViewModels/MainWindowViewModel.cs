@@ -11,11 +11,15 @@ public partial class MainWindowViewModel(
     IAuthorizationService authorizationService,
     IAuthenticationService authenticationService,
     UserManagementViewModel userManagementViewModel,
-    LogSearchViewModel logSearchViewModel) : ObservableObject
+    LogSearchViewModel logSearchViewModel,
+    TechnicalHistoryViewModel technicalHistoryViewModel,
+    KnowledgeBaseViewModel knowledgeBaseViewModel) : ObservableObject
 {
     public IReadOnlyCollection<ModuleNavigationItemViewModel> Modules { get; private set; } = [];
     public UserManagementViewModel UserManagement { get; } = userManagementViewModel;
     public LogSearchViewModel LogSearch { get; } = logSearchViewModel;
+    public TechnicalHistoryViewModel TechnicalHistory { get; } = technicalHistoryViewModel;
+    public KnowledgeBaseViewModel KnowledgeBase { get; } = knowledgeBaseViewModel;
 
     [ObservableProperty]
     private ModuleNavigationItemViewModel? selectedModule;

@@ -10,5 +10,7 @@ public interface IAppDbContext
     DbSet<Permission> Permissions { get; }
     DbSet<RolePermission> RolePermissions { get; }
     DbSet<UserSession> UserSessions { get; }
+    DbSet<TechnicalAnalysis> TechnicalAnalyses { get; }
+    DbSet<KnowledgeBaseArticle> KnowledgeBaseArticles { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

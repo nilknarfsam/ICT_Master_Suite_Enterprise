@@ -43,6 +43,8 @@ public partial class App : System.Windows.Application
                 services.AddTransient<LoginWindow>();
                 services.AddTransient<UserManagementViewModel>();
                 services.AddTransient<LogSearchViewModel>();
+                services.AddTransient<TechnicalHistoryViewModel>();
+                services.AddTransient<KnowledgeBaseViewModel>();
                 services.AddSingleton<MainWindowViewModel>();
                 services.AddSingleton<MainWindow>();
             })

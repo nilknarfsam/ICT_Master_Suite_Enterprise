@@ -88,9 +88,13 @@
                         <TextBox Margin="8,0,0,0" Width="380" Text="{Binding LogSearch.DirectoryInput, UpdateSourceTrigger=PropertyChanged}" />
                         <Button Margin="8,0,0,0" Content="Adicionar Diretório" Command="{Binding LogSearch.AddDirectoryCommand}" />
                         <Button Margin="8,0,0,0" Content="Pesquisar" Command="{Binding LogSearch.SearchCommand}" />
+                        <Button Margin="8,0,0,0" Content="Registrar análise" Command="{Binding LogSearch.RegisterAnalysisCommand}" />
                     </StackPanel>
+                    <TextBlock Grid.Row="1" Margin="0,4,0,4" Foreground="#FFF59E0B" Visibility="{Binding LogSearch.HasPreviousHistory, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        Atenção: este serial já possui histórico técnico anterior.
+                    </TextBlock>
 
-                    <ItemsControl Grid.Row="1" Margin="0,8,0,8" ItemsSource="{Binding LogSearch.Directories}">
+                    <ItemsControl Grid.Row="1" Margin="0,28,0,8" ItemsSource="{Binding LogSearch.Directories}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <DockPanel Margin="0,2,0,2">
@@ -106,6 +110,7 @@
 
                     <DataGrid Grid.Row="2"
                               ItemsSource="{Binding LogSearch.Results}"
+                              SelectedItem="{Binding LogSearch.SelectedResult}"
                               AutoGenerateColumns="False"
                               IsReadOnly="True">
                         <DataGrid.Columns>
@@ -122,6 +127,86 @@
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
+                <Grid Margin="0,16,0,0" Visibility="{Binding SelectedModule.Module, Converter={StaticResource ModuleVisibilityConverter}, ConverterParameter=TechnicalHistory}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBox Width="220" Text="{Binding TechnicalHistory.SerialSearch, UpdateSourceTrigger=PropertyChanged}" />
+                        <Button Margin="8,0,0,0" Content="Buscar Histórico" Command="{Binding TechnicalHistory.SearchCommand}" />
+                    </StackPanel>
+                    <Grid Grid.Row="1" Margin="0,12,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <DataGrid ItemsSource="{Binding TechnicalHistory.Analyses}"
+                                  SelectedItem="{Binding TechnicalHistory.SelectedAnalysis}"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Data" Binding="{Binding CreatedAt}" Width="150" />
+                                <DataGridTextColumn Header="Serial" Binding="{Binding SerialNumber}" Width="120" />
+                                <DataGridTextColumn Header="Modelo" Binding="{Binding Model}" Width="120" />
+                                <DataGridTextColumn Header="Resultado" Binding="{Binding Result}" Width="90" />
+                                <DataGridTextColumn Header="Erro" Binding="{Binding ErrorCode}" Width="100" />
+                                <DataGridTextColumn Header="Resumo" Binding="{Binding Summary}" Width="*" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <StackPanel Grid.Column="1" Margin="12,0,0,0">
+                            <TextBlock Text="Detalhe da análise" FontWeight="Bold" />
+                            <TextBlock Text="{Binding TechnicalHistory.SelectedAnalysis.AnalysisText}" TextWrapping="Wrap" Margin="0,8,0,0" />
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+                <Grid Margin="0,16,0,0" Visibility="{Binding SelectedModule.Module, Converter={StaticResource ModuleVisibilityConverter}, ConverterParameter=KnowledgeBase}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBox Width="150" Text="{Binding KnowledgeBase.ModelSearch, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBox Margin="8,0,0,0" Width="150" Text="{Binding KnowledgeBase.TestPhaseSearch, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBox Margin="8,0,0,0" Width="240" Text="{Binding KnowledgeBase.TermSearch, UpdateSourceTrigger=PropertyChanged}" />
+                        <Button Margin="8,0,0,0" Content="Buscar artigos" Command="{Binding KnowledgeBase.SearchCommand}" />
+                        <Button Margin="8,0,0,0" Content="Criar" Command="{Binding KnowledgeBase.CreateCommand}" />
+                        <Button Margin="8,0,0,0" Content="Salvar edição" Command="{Binding KnowledgeBase.UpdateSelectedCommand}" />
+                        <Button Margin="8,0,0,0" Content="Ativar/Inativar" Command="{Binding KnowledgeBase.ToggleActiveSelectedCommand}" />
+                    </StackPanel>
+                    <Grid Grid.Row="1" Margin="0,12,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <DataGrid ItemsSource="{Binding KnowledgeBase.Articles}"
+                                  SelectedItem="{Binding KnowledgeBase.SelectedArticle}"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Modelo" Binding="{Binding Model}" Width="120" />
+                                <DataGridTextColumn Header="Fase" Binding="{Binding TestPhase}" Width="120" />
+                                <DataGridTextColumn Header="Sintoma" Binding="{Binding Symptom}" Width="*" />
+                                <DataGridCheckBoxColumn Header="Ativo" Binding="{Binding IsActive}" Width="70" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <StackPanel Grid.Column="1" Margin="12,0,0,0">
+                            <TextBlock Text="Modelo" />
+                            <TextBox Text="{Binding KnowledgeBase.ModelInput, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,8" />
+                            <TextBlock Text="Fase de teste" />
+                            <TextBox Text="{Binding KnowledgeBase.TestPhaseInput, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,8" />
+                            <TextBlock Text="Sintoma" />
+                            <TextBox Text="{Binding KnowledgeBase.SymptomInput, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,8" />
+                            <TextBlock Text="Solução" />
+                            <TextBox Text="{Binding KnowledgeBase.SolutionInput, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,8" />
+                            <TextBlock Text="Autor" />
+                            <TextBox Text="{Binding KnowledgeBase.AuthorInput, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,8" />
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+                <TextBlock Margin="0,8,0,0"
+                           Text="{Binding SelectedModule.Module, Converter={StaticResource ModuleVisibilityConverter}, ConverterParameter=LogFinder}"
+                           Visibility="Collapsed" />
                 <TextBlock Margin="0,8,0,0"
                            Text="{Binding LogSearch.StatusMessage}"
                            Foreground="{DynamicResource PrimaryTextBrush}" />

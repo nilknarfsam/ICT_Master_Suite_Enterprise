@@ -15,6 +15,8 @@ public sealed class IctMasterSuiteDbContext : DbContext, IAppDbContext
     public DbSet<Permission> Permissions => Set<Permission>();
     public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
     public DbSet<UserSession> UserSessions => Set<UserSession>();
+    public DbSet<TechnicalAnalysis> TechnicalAnalyses => Set<TechnicalAnalysis>();
+    public DbSet<KnowledgeBaseArticle> KnowledgeBaseArticles => Set<KnowledgeBaseArticle>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -62,6 +64,35 @@ public sealed class IctMasterSuiteDbContext : DbContext, IAppDbContext
             entity.HasKey(x => x.Id);
             entity.Property(x => x.SessionToken).HasMaxLength(200).IsRequired();
             entity.HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId);
+        });
+
+        modelBuilder.Entity<TechnicalAnalysis>(entity =>
+        {
+            entity.ToTable("TechnicalAnalyses");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.SerialNumber).HasMaxLength(120).IsRequired();
+            entity.Property(x => x.Model).HasMaxLength(120).IsRequired();
+            entity.Property(x => x.FileName).HasMaxLength(260).IsRequired();
+            entity.Property(x => x.FilePath).HasMaxLength(1024).IsRequired();
+            entity.Property(x => x.LogType).HasMaxLength(40).IsRequired();
+            entity.Property(x => x.ErrorCode).HasMaxLength(120).IsRequired();
+            entity.Property(x => x.ErrorDescription).HasMaxLength(2000).IsRequired();
+            entity.Property(x => x.Summary).HasMaxLength(4000).IsRequired();
+            entity.Property(x => x.TechnicianName).HasMaxLength(120).IsRequired();
+            entity.Property(x => x.AnalysisText).HasMaxLength(4000).IsRequired();
+            entity.HasIndex(x => x.SerialNumber);
+        });
+
+        modelBuilder.Entity<KnowledgeBaseArticle>(entity =>
+        {
+            entity.ToTable("KnowledgeBaseArticles");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.Model).HasMaxLength(120).IsRequired();
+            entity.Property(x => x.TestPhase).HasMaxLength(120).IsRequired();
+            entity.Property(x => x.Symptom).HasMaxLength(2000).IsRequired();
+            entity.Property(x => x.Solution).HasMaxLength(4000).IsRequired();
+            entity.Property(x => x.Author).HasMaxLength(120).IsRequired();
+            entity.HasIndex(x => new { x.Model, x.TestPhase });
         });
 
         SeedData.Apply(modelBuilder);

@@ -9,6 +9,7 @@
                 <ResourceDictionary Source="Themes/Theme.Base.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <converters:ModuleVisibilityConverter x:Key="ModuleVisibilityConverter" />
+            <converters:BooleanToVisibilityConverterEx x:Key="BooleanToVisibilityConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>
