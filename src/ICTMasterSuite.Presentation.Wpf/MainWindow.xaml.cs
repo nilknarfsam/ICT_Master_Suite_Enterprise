@@ -15,6 +15,9 @@ public partial class MainWindow : Window
         _viewModel = viewModel;
         _serviceProvider = serviceProvider;
         _viewModel.LoggedOut += OnLoggedOut;
+        _viewModel.LogSearch.RegisterAnalysisRequested += OnRegisterAnalysisRequested;
+        _viewModel.LogSearch.ViewHistoryRequested += OnViewHistoryRequested;
+        _viewModel.LogSearch.SearchKnowledgeRequested += OnSearchKnowledgeRequested;
         DataContext = _viewModel;
         Loaded += OnLoaded;
     }
@@ -36,5 +39,28 @@ public partial class MainWindow : Window
         }
 
         Close();
+    }
+
+    private async void OnViewHistoryRequested(object? sender, string serialNumber)
+    {
+        _viewModel.NavigateToModule(Domain.Enums.SystemModule.TechnicalHistory);
+        await _viewModel.TechnicalHistory.SearchBySerialAsync(serialNumber);
+    }
+
+    private async void OnSearchKnowledgeRequested(object? sender, (string Model, string Term) query)
+    {
+        _viewModel.NavigateToModule(Domain.Enums.SystemModule.KnowledgeBase);
+        await _viewModel.KnowledgeBase.SearchRelatedAsync(query.Model, query.Term);
+    }
+
+    private void OnRegisterAnalysisRequested(object? sender, Domain.Entities.ParsedLog log)
+    {
+        var window = _serviceProvider.GetRequiredService<RegisterAnalysisWindow>();
+        window.Owner = this;
+        window.Initialize(log);
+        var success = window.ShowDialog() is true;
+        _viewModel.LogSearch.StatusMessage = success
+            ? "Análise registrada e vinculada ao histórico técnico."
+            : _viewModel.LogSearch.StatusMessage;
     }
 }

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ICTMasterSuite.Presentation.Wpf")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ee138506931419fca4be237ee267140911fb4087")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6f477c51f2188a56bf94743cb8cbb44da17074b5")]
 [assembly: System.Reflection.AssemblyProductAttribute("ICTMasterSuite.Presentation.Wpf")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ICTMasterSuite.Presentation.Wpf")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

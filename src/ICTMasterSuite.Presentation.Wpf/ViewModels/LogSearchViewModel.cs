@@ -3,8 +3,6 @@ using CommunityToolkit.Mvvm.Input;
 using ICTMasterSuite.Application.Abstractions.Services;
 using ICTMasterSuite.Application.Logs.Dtos;
 using ICTMasterSuite.Application.Logs.UseCases;
-using ICTMasterSuite.Application.TechnicalHistory.Dtos;
-using ICTMasterSuite.Application.TechnicalHistory.UseCases;
 using ICTMasterSuite.Domain.Entities;
 using System.IO;
 using System.Collections.ObjectModel;
@@ -13,7 +11,6 @@ namespace ICTMasterSuite.Presentation.Wpf.ViewModels;
 
 public partial class LogSearchViewModel(
     SearchLogsWithAnalysisUseCase useCase,
-    SaveTechnicalAnalysisUseCase saveTechnicalAnalysisUseCase,
     ITechnicalHistoryService technicalHistoryService) : ObservableObject
 {
     public ObservableCollection<string> Directories { get; } = [];
@@ -24,9 +21,11 @@ public partial class LogSearchViewModel(
     [ObservableProperty] private bool isLoading;
     [ObservableProperty] private string statusMessage = string.Empty;
     [ObservableProperty] private ParsedLog? selectedResult;
-    [ObservableProperty] private string technicianName = "Analista";
-    [ObservableProperty] private string analysisText = string.Empty;
     [ObservableProperty] private bool hasPreviousHistory;
+
+    public event EventHandler<ParsedLog>? RegisterAnalysisRequested;
+    public event EventHandler<string>? ViewHistoryRequested;
+    public event EventHandler<(string Model, string Term)>? SearchKnowledgeRequested;
 
     [RelayCommand]
     private void AddDirectory()
@@ -81,7 +80,7 @@ public partial class LogSearchViewModel(
     }
 
     [RelayCommand]
-    private async Task RegisterAnalysisAsync()
+    private void RegisterAnalysis()
     {
         if (SelectedResult is null)
         {
@@ -89,21 +88,7 @@ public partial class LogSearchViewModel(
             return;
         }
 
-        var request = new SaveTechnicalAnalysisRequest(
-            SelectedResult.SerialNumber,
-            SelectedResult.Model,
-            SelectedResult.FileName,
-            SelectedResult.FullPath,
-            SelectedResult.SourceType,
-            SelectedResult.Result,
-            SelectedResult.ErrorCode,
-            SelectedResult.ErrorDescription,
-            SelectedResult.Summary,
-            TechnicianName,
-            string.IsNullOrWhiteSpace(AnalysisText) ? "Analise inicial registrada via Finder." : AnalysisText);
-
-        var result = await saveTechnicalAnalysisUseCase.ExecuteAsync(request);
-        StatusMessage = result.IsSuccess ? "Analise tecnica registrada com sucesso." : result.Message;
+        RegisterAnalysisRequested?.Invoke(this, SelectedResult);
     }
 
     partial void OnSelectedResultChanged(ParsedLog? value)
@@ -125,5 +110,29 @@ public partial class LogSearchViewModel(
         {
             StatusMessage = $"Alerta: serial {serialNumber} ja possui historico tecnico.";
         }
+    }
+
+    [RelayCommand]
+    private void OpenHistory()
+    {
+        if (SelectedResult is null)
+        {
+            StatusMessage = "Selecione um log para abrir o histórico.";
+            return;
+        }
+
+        ViewHistoryRequested?.Invoke(this, SelectedResult.SerialNumber);
+    }
+
+    [RelayCommand]
+    private void SearchRelatedKnowledge()
+    {
+        if (SelectedResult is null)
+        {
+            StatusMessage = "Selecione um log para buscar conhecimento relacionado.";
+            return;
+        }
+
+        SearchKnowledgeRequested?.Invoke(this, (SelectedResult.Model, SelectedResult.ErrorDescription));
     }
 }

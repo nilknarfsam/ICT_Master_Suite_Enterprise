@@ -13,6 +13,7 @@ public partial class TechnicalHistoryViewModel(GetTechnicalHistoryBySerialUseCas
     [ObservableProperty] private string serialSearch = string.Empty;
     [ObservableProperty] private TechnicalAnalysisDto? selectedAnalysis;
     [ObservableProperty] private string statusMessage = string.Empty;
+    [ObservableProperty] private bool hasResults;
 
     [RelayCommand]
     private async Task SearchAsync()
@@ -31,6 +32,15 @@ public partial class TechnicalHistoryViewModel(GetTechnicalHistoryBySerialUseCas
             Analyses.Add(item);
         }
 
-        StatusMessage = result.IsSuccess ? $"{Analyses.Count} analise(s) encontradas." : result.Message;
+        HasResults = Analyses.Count > 0;
+        StatusMessage = result.IsSuccess
+            ? (HasResults ? $"{Analyses.Count} analise(s) encontradas." : "Nenhuma análise encontrada para este serial.")
+            : result.Message;
+    }
+
+    public async Task SearchBySerialAsync(string serial)
+    {
+        SerialSearch = serial;
+        await SearchAsync();
     }
 }

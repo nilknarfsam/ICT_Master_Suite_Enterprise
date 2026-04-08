@@ -47,6 +47,8 @@ public partial class App : System.Windows.Application
                 services.AddTransient<LogSearchViewModel>();
                 services.AddTransient<TechnicalHistoryViewModel>();
                 services.AddTransient<KnowledgeBaseViewModel>();
+                services.AddTransient<RegisterAnalysisViewModel>();
+                services.AddTransient<RegisterAnalysisWindow>();
                 services.AddSingleton<MainWindowViewModel>();
                 services.AddSingleton<MainWindow>();
             })

@@ -20,6 +20,7 @@ public partial class KnowledgeBaseViewModel(IKnowledgeBaseService knowledgeBaseS
     [ObservableProperty] private string solutionInput = string.Empty;
     [ObservableProperty] private string authorInput = "Analista";
     [ObservableProperty] private string statusMessage = string.Empty;
+    [ObservableProperty] private bool hasResults;
 
     [RelayCommand]
     private async Task SearchAsync()
@@ -31,7 +32,10 @@ public partial class KnowledgeBaseViewModel(IKnowledgeBaseService knowledgeBaseS
             Articles.Add(article);
         }
 
-        StatusMessage = result.IsSuccess ? $"{Articles.Count} artigo(s) encontrado(s)." : result.Message;
+        HasResults = Articles.Count > 0;
+        StatusMessage = result.IsSuccess
+            ? (HasResults ? $"{Articles.Count} artigo(s) encontrado(s)." : "Nenhum artigo encontrado para os filtros.")
+            : result.Message;
     }
 
     [RelayCommand]
@@ -84,5 +88,12 @@ public partial class KnowledgeBaseViewModel(IKnowledgeBaseService knowledgeBaseS
         SymptomInput = value.Symptom;
         SolutionInput = value.Solution;
         AuthorInput = value.Author;
+    }
+
+    public async Task SearchRelatedAsync(string model, string term)
+    {
+        ModelSearch = model;
+        TermSearch = term;
+        await SearchAsync();
     }
 }

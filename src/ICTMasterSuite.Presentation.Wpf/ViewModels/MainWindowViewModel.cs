@@ -78,4 +78,9 @@ public partial class MainWindowViewModel(
 
         return filtered;
     }
+
+    public void NavigateToModule(SystemModule module)
+    {
+        SelectedModule = Modules.FirstOrDefault(x => x.Module == module) ?? SelectedModule;
+    }
 }

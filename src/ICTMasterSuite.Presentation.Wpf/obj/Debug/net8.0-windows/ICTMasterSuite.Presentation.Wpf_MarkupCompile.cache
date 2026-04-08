@@ -10,11 +10,11 @@ none
 false
 TRACE;DEBUG;NET;NET8_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_OR_GREATER;NET7_0_OR_GREATER;NET8_0_OR_GREATER;NETCOREAPP3_0_OR_GREATER;NETCOREAPP3_1_OR_GREATER;WINDOWS7_0_OR_GREATER
 C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Presentation.Wpf\App.xaml
-5-1012717183
+685304958
 
-17656164062
+19984956404
 2772028169992
-LoginWindow.xaml;MainWindow.xaml;Themes\Colors.Dark.xaml;Themes\Colors.Light.xaml;Themes\Theme.Base.xaml;
+LoginWindow.xaml;MainWindow.xaml;RegisterAnalysisWindow.xaml;Themes\Colors.Dark.xaml;Themes\Colors.Light.xaml;Themes\Theme.Base.xaml;
 
 False
 

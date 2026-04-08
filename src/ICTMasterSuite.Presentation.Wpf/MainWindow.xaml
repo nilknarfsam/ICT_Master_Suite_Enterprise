@@ -86,13 +86,12 @@
                     <StackPanel Orientation="Horizontal">
                         <TextBox Width="220" Text="{Binding LogSearch.SearchTerm, UpdateSourceTrigger=PropertyChanged}" />
                         <TextBox Margin="8,0,0,0" Width="380" Text="{Binding LogSearch.DirectoryInput, UpdateSourceTrigger=PropertyChanged}" />
-                        <Button Margin="8,0,0,0" Content="Adicionar Diretório" Command="{Binding LogSearch.AddDirectoryCommand}" />
-                        <Button Margin="8,0,0,0" Content="Pesquisar" Command="{Binding LogSearch.SearchCommand}" />
-                        <Button Margin="8,0,0,0" Content="Registrar análise" Command="{Binding LogSearch.RegisterAnalysisCommand}" />
+                        <Button Margin="8,0,0,0" Style="{DynamicResource SoftButtonStyle}" Content="Adicionar Diretório" Command="{Binding LogSearch.AddDirectoryCommand}" />
+                        <Button Margin="8,0,0,0" Style="{DynamicResource SoftButtonStyle}" Content="Pesquisar" Command="{Binding LogSearch.SearchCommand}" />
                     </StackPanel>
-                    <TextBlock Grid.Row="1" Margin="0,4,0,4" Foreground="#FFF59E0B" Visibility="{Binding LogSearch.HasPreviousHistory, Converter={StaticResource BooleanToVisibilityConverter}}">
-                        Atenção: este serial já possui histórico técnico anterior.
-                    </TextBlock>
+                    <Border Grid.Row="1" Margin="0,6,0,6" Padding="10" Background="#14F59E0B" CornerRadius="8" Visibility="{Binding LogSearch.HasPreviousHistory, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <TextBlock Foreground="#FFFCD34D">Atenção: este serial já possui histórico técnico anterior.</TextBlock>
+                    </Border>
 
                     <ItemsControl Grid.Row="1" Margin="0,28,0,8" ItemsSource="{Binding LogSearch.Directories}">
                         <ItemsControl.ItemTemplate>
@@ -100,6 +99,7 @@
                                 <DockPanel Margin="0,2,0,2">
                                     <Button DockPanel.Dock="Right"
                                             Content="X"
+                                            Style="{DynamicResource SoftButtonStyle}"
                                             Command="{Binding DataContext.LogSearch.RemoveDirectoryCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                             CommandParameter="{Binding}" />
                                     <TextBlock Text="{Binding}" Foreground="{DynamicResource MutedTextBrush}" />
@@ -126,16 +126,26 @@
                             <DataGridTextColumn Header="Resumo" Binding="{Binding Summary}" Width="2*" />
                         </DataGrid.Columns>
                     </DataGrid>
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,8,8,0">
+                        <Button Style="{DynamicResource SoftButtonStyle}" Content="Registrar análise" Command="{Binding LogSearch.RegisterAnalysisCommand}" />
+                        <Button Margin="8,0,0,0" Style="{DynamicResource SoftButtonStyle}" Content="Ver histórico" Command="{Binding LogSearch.OpenHistoryCommand}" />
+                        <Button Margin="8,0,0,0" Style="{DynamicResource SoftButtonStyle}" Content="Conhecimento relacionado" Command="{Binding LogSearch.SearchRelatedKnowledgeCommand}" />
+                    </StackPanel>
                 </Grid>
                 <Grid Margin="0,16,0,0" Visibility="{Binding SelectedModule.Module, Converter={StaticResource ModuleVisibilityConverter}, ConverterParameter=TechnicalHistory}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBox Width="220" Text="{Binding TechnicalHistory.SerialSearch, UpdateSourceTrigger=PropertyChanged}" />
-                        <Button Margin="8,0,0,0" Content="Buscar Histórico" Command="{Binding TechnicalHistory.SearchCommand}" />
-                    </StackPanel>
+                    <Border Style="{DynamicResource PremiumCardStyle}">
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Left" Text="Histórico por Serial" Style="{DynamicResource SectionTitleTextStyle}" VerticalAlignment="Center" />
+                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                                <TextBox Width="240" Text="{Binding TechnicalHistory.SerialSearch, UpdateSourceTrigger=PropertyChanged}" />
+                                <Button Margin="8,0,0,0" Style="{DynamicResource SoftButtonStyle}" Content="Buscar Histórico" Command="{Binding TechnicalHistory.SearchCommand}" />
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
                     <Grid Grid.Row="1" Margin="0,12,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="2*" />
@@ -154,10 +164,20 @@
                                 <DataGridTextColumn Header="Resumo" Binding="{Binding Summary}" Width="*" />
                             </DataGrid.Columns>
                         </DataGrid>
-                        <StackPanel Grid.Column="1" Margin="12,0,0,0">
-                            <TextBlock Text="Detalhe da análise" FontWeight="Bold" />
-                            <TextBlock Text="{Binding TechnicalHistory.SelectedAnalysis.AnalysisText}" TextWrapping="Wrap" Margin="0,8,0,0" />
-                        </StackPanel>
+                        <Border Grid.Column="1" Margin="12,0,0,0" Style="{DynamicResource PremiumCardStyle}">
+                            <StackPanel>
+                                <TextBlock Text="Detalhe da análise" Style="{DynamicResource SectionTitleTextStyle}" />
+                                <TextBlock Margin="0,8,0,0" Foreground="{DynamicResource MutedTextBrush}" Text="{Binding TechnicalHistory.SelectedAnalysis.CreatedAt, StringFormat='Data: {0:dd/MM/yyyy HH:mm}'}" />
+                                <TextBlock Foreground="{DynamicResource MutedTextBrush}" Text="{Binding TechnicalHistory.SelectedAnalysis.TechnicianName, StringFormat='Técnico: {0}'}" />
+                                <TextBlock Foreground="{DynamicResource MutedTextBrush}" Text="{Binding TechnicalHistory.SelectedAnalysis.ErrorCode, StringFormat='Erro: {0}'}" />
+                                <TextBlock Text="{Binding TechnicalHistory.SelectedAnalysis.Summary}" Margin="0,10,0,0" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                <TextBlock Text="{Binding TechnicalHistory.SelectedAnalysis.AnalysisText}" TextWrapping="Wrap" Margin="0,10,0,0" />
+                                <TextBlock Margin="0,14,0,0"
+                                           Foreground="{DynamicResource MutedTextBrush}"
+                                           Visibility="{Binding TechnicalHistory.HasResults, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=False}"
+                                           Text="Nenhuma análise selecionada." />
+                            </StackPanel>
+                        </Border>
                     </Grid>
                 </Grid>
                 <Grid Margin="0,16,0,0" Visibility="{Binding SelectedModule.Module, Converter={StaticResource ModuleVisibilityConverter}, ConverterParameter=KnowledgeBase}">
@@ -165,15 +185,20 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBox Width="150" Text="{Binding KnowledgeBase.ModelSearch, UpdateSourceTrigger=PropertyChanged}" />
-                        <TextBox Margin="8,0,0,0" Width="150" Text="{Binding KnowledgeBase.TestPhaseSearch, UpdateSourceTrigger=PropertyChanged}" />
-                        <TextBox Margin="8,0,0,0" Width="240" Text="{Binding KnowledgeBase.TermSearch, UpdateSourceTrigger=PropertyChanged}" />
-                        <Button Margin="8,0,0,0" Content="Buscar artigos" Command="{Binding KnowledgeBase.SearchCommand}" />
-                        <Button Margin="8,0,0,0" Content="Criar" Command="{Binding KnowledgeBase.CreateCommand}" />
-                        <Button Margin="8,0,0,0" Content="Salvar edição" Command="{Binding KnowledgeBase.UpdateSelectedCommand}" />
-                        <Button Margin="8,0,0,0" Content="Ativar/Inativar" Command="{Binding KnowledgeBase.ToggleActiveSelectedCommand}" />
-                    </StackPanel>
+                    <Border Style="{DynamicResource PremiumCardStyle}">
+                        <StackPanel>
+                            <TextBlock Text="Busca de Base de Conhecimento" Style="{DynamicResource SectionTitleTextStyle}" Margin="0,0,0,8" />
+                            <StackPanel Orientation="Horizontal">
+                                <TextBox Width="150" Text="{Binding KnowledgeBase.ModelSearch, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBox Margin="8,0,0,0" Width="150" Text="{Binding KnowledgeBase.TestPhaseSearch, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBox Margin="8,0,0,0" Width="240" Text="{Binding KnowledgeBase.TermSearch, UpdateSourceTrigger=PropertyChanged}" />
+                                <Button Margin="8,0,0,0" Style="{DynamicResource SoftButtonStyle}" Content="Buscar artigos" Command="{Binding KnowledgeBase.SearchCommand}" />
+                                <Button Margin="8,0,0,0" Style="{DynamicResource SoftButtonStyle}" Content="Criar" Command="{Binding KnowledgeBase.CreateCommand}" />
+                                <Button Margin="8,0,0,0" Style="{DynamicResource SoftButtonStyle}" Content="Salvar edição" Command="{Binding KnowledgeBase.UpdateSelectedCommand}" />
+                                <Button Margin="8,0,0,0" Style="{DynamicResource SoftButtonStyle}" Content="Ativar/Inativar" Command="{Binding KnowledgeBase.ToggleActiveSelectedCommand}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
                     <Grid Grid.Row="1" Margin="0,12,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="2*" />
@@ -190,23 +215,23 @@
                                 <DataGridCheckBoxColumn Header="Ativo" Binding="{Binding IsActive}" Width="70" />
                             </DataGrid.Columns>
                         </DataGrid>
-                        <StackPanel Grid.Column="1" Margin="12,0,0,0">
-                            <TextBlock Text="Modelo" />
-                            <TextBox Text="{Binding KnowledgeBase.ModelInput, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,8" />
-                            <TextBlock Text="Fase de teste" />
-                            <TextBox Text="{Binding KnowledgeBase.TestPhaseInput, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,8" />
-                            <TextBlock Text="Sintoma" />
-                            <TextBox Text="{Binding KnowledgeBase.SymptomInput, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,8" />
-                            <TextBlock Text="Solução" />
-                            <TextBox Text="{Binding KnowledgeBase.SolutionInput, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,8" />
-                            <TextBlock Text="Autor" />
-                            <TextBox Text="{Binding KnowledgeBase.AuthorInput, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,8" />
-                        </StackPanel>
+                        <Border Grid.Column="1" Margin="12,0,0,0" Style="{DynamicResource PremiumCardStyle}">
+                            <StackPanel>
+                                <TextBlock Text="Editor de Artigo" Style="{DynamicResource SectionTitleTextStyle}" />
+                                <TextBlock Text="Modelo" Margin="0,8,0,0" />
+                                <TextBox Text="{Binding KnowledgeBase.ModelInput, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,8" />
+                                <TextBlock Text="Fase de teste" />
+                                <TextBox Text="{Binding KnowledgeBase.TestPhaseInput, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,8" />
+                                <TextBlock Text="Sintoma" />
+                                <TextBox Text="{Binding KnowledgeBase.SymptomInput, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,8" />
+                                <TextBlock Text="Solução" />
+                                <TextBox Text="{Binding KnowledgeBase.SolutionInput, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,8" />
+                                <TextBlock Text="Autor" />
+                                <TextBox Text="{Binding KnowledgeBase.AuthorInput, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,8" />
+                            </StackPanel>
+                        </Border>
                     </Grid>
                 </Grid>
-                <TextBlock Margin="0,8,0,0"
-                           Text="{Binding SelectedModule.Module, Converter={StaticResource ModuleVisibilityConverter}, ConverterParameter=LogFinder}"
-                           Visibility="Collapsed" />
                 <TextBlock Margin="0,8,0,0"
                            Text="{Binding LogSearch.StatusMessage}"
                            Foreground="{DynamicResource PrimaryTextBrush}" />
