@@ -9284,11 +9284,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "c:\\projetos\\ICT_Master_Suite\\tests\\ICTMasterSuite.Application.Tests\\ICTMasterSuite.Application.Tests.csproj",
+      "projectUniqueName": "C:\\projetos\\ICT_Master_Suite\\tests\\ICTMasterSuite.Application.Tests\\ICTMasterSuite.Application.Tests.csproj",
       "projectName": "ICTMasterSuite.Application.Tests",
-      "projectPath": "c:\\projetos\\ICT_Master_Suite\\tests\\ICTMasterSuite.Application.Tests\\ICTMasterSuite.Application.Tests.csproj",
+      "projectPath": "C:\\projetos\\ICT_Master_Suite\\tests\\ICTMasterSuite.Application.Tests\\ICTMasterSuite.Application.Tests.csproj",
       "packagesPath": "C:\\Users\\fcampos\\.nuget\\packages\\",
-      "outputPath": "c:\\projetos\\ICT_Master_Suite\\tests\\ICTMasterSuite.Application.Tests\\obj\\",
+      "outputPath": "C:\\projetos\\ICT_Master_Suite\\tests\\ICTMasterSuite.Application.Tests\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -9312,8 +9312,8 @@
             "c:\\projetos\\ICT_Master_Suite\\src\\ICTMasterSuite.Application\\ICTMasterSuite.Application.csproj": {
               "projectPath": "c:\\projetos\\ICT_Master_Suite\\src\\ICTMasterSuite.Application\\ICTMasterSuite.Application.csproj"
             },
-            "c:\\projetos\\ICT_Master_Suite\\src\\ICTMasterSuite.Infrastructure\\ICTMasterSuite.Infrastructure.csproj": {
-              "projectPath": "c:\\projetos\\ICT_Master_Suite\\src\\ICTMasterSuite.Infrastructure\\ICTMasterSuite.Infrastructure.csproj"
+            "C:\\projetos\\ICT_Master_Suite\\src\\ICTMasterSuite.Infrastructure\\ICTMasterSuite.Infrastructure.csproj": {
+              "projectPath": "C:\\projetos\\ICT_Master_Suite\\src\\ICTMasterSuite.Infrastructure\\ICTMasterSuite.Infrastructure.csproj"
             }
           }
         }

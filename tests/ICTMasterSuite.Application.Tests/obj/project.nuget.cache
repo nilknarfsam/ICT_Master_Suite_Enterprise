@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "0X2zSKLDodI=",
+  "dgSpecHash": "MUssceFTZmo=",
   "success": true,
-  "projectFilePath": "c:\\projetos\\ICT_Master_Suite\\tests\\ICTMasterSuite.Application.Tests\\ICTMasterSuite.Application.Tests.csproj",
+  "projectFilePath": "C:\\projetos\\ICT_Master_Suite\\tests\\ICTMasterSuite.Application.Tests\\ICTMasterSuite.Application.Tests.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\fcampos\\.nuget\\packages\\azure.core\\1.35.0\\azure.core.1.35.0.nupkg.sha512",
     "C:\\Users\\fcampos\\.nuget\\packages\\azure.identity\\1.10.3\\azure.identity.1.10.3.nupkg.sha512",

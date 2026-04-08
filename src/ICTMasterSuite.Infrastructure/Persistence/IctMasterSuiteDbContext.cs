@@ -29,6 +29,7 @@ public sealed class IctMasterSuiteDbContext : DbContext, IAppDbContext
             entity.Property(x => x.Username).HasMaxLength(100).IsRequired();
             entity.Property(x => x.Email).HasMaxLength(200).IsRequired();
             entity.Property(x => x.PasswordHash).HasMaxLength(600).IsRequired();
+            entity.Property(x => x.MustChangePassword).IsRequired();
             entity.HasIndex(x => x.Username).IsUnique();
             entity.HasIndex(x => x.Email).IsUnique();
             entity.HasOne(x => x.Role).WithMany().HasForeignKey(x => x.RoleId).OnDelete(DeleteBehavior.Restrict);

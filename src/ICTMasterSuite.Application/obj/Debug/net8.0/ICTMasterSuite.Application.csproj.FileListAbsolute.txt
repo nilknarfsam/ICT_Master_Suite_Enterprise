@@ -8,9 +8,9 @@ C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Application\obj\Debug\net8.0\ICT
 C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Application\obj\Debug\net8.0\ICTMasterSuite.Application.AssemblyInfoInputs.cache
 C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Application\obj\Debug\net8.0\ICTMasterSuite.Application.AssemblyInfo.cs
 C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Application\obj\Debug\net8.0\ICTMasterSuite.Application.csproj.CoreCompileInputs.cache
+C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Application\obj\Debug\net8.0\ICTMasterSuite.Application.sourcelink.json
 C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Application\obj\Debug\net8.0\ICTMaste.DAE5B34D.Up2Date
 C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Application\obj\Debug\net8.0\ICTMasterSuite.Application.dll
 C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Application\obj\Debug\net8.0\refint\ICTMasterSuite.Application.dll
 C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Application\obj\Debug\net8.0\ICTMasterSuite.Application.pdb
 C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Application\obj\Debug\net8.0\ref\ICTMasterSuite.Application.dll
-C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Application\obj\Debug\net8.0\ICTMasterSuite.Application.sourcelink.json

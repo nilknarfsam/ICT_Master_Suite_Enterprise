@@ -5,8 +5,8 @@ C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Domain\obj\Debug\net8.0\ICTMaste
 C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Domain\obj\Debug\net8.0\ICTMasterSuite.Domain.AssemblyInfoInputs.cache
 C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Domain\obj\Debug\net8.0\ICTMasterSuite.Domain.AssemblyInfo.cs
 C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Domain\obj\Debug\net8.0\ICTMasterSuite.Domain.csproj.CoreCompileInputs.cache
+C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Domain\obj\Debug\net8.0\ICTMasterSuite.Domain.sourcelink.json
 C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Domain\obj\Debug\net8.0\ICTMasterSuite.Domain.dll
 C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Domain\obj\Debug\net8.0\refint\ICTMasterSuite.Domain.dll
 C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Domain\obj\Debug\net8.0\ICTMasterSuite.Domain.pdb
 C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Domain\obj\Debug\net8.0\ref\ICTMasterSuite.Domain.dll
-C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Domain\obj\Debug\net8.0\ICTMasterSuite.Domain.sourcelink.json

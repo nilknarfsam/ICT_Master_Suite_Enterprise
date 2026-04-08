@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ICTMasterSuite.Application.Abstractions.Services;
+using ICTMasterSuite.Application.Configuration;
 using ICTMasterSuite.Domain.Enums;
 using ICTMasterSuite.Presentation.Wpf.Services;
 
@@ -50,7 +51,10 @@ public partial class MainWindowViewModel(
         await UserManagement.InitializeAsync();
         await Dashboard.RefreshDataAsync();
         await Settings.LoadAsync();
-        await Updater.CheckUpdatesAsync();
+        if (AutoUpdateCheckEligibility.ShouldRunAutomaticCheck(Settings.AutoCheckUpdates))
+        {
+            await Updater.CheckUpdatesAsync();
+        }
     }
 
     [RelayCommand]

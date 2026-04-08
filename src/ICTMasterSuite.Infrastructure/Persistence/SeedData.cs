@@ -30,6 +30,7 @@ internal static class SeedData
             new { Id = Guid.Parse("5A73B376-4E9B-4F79-99E6-2CF1D37D8A8B"), Category = "UI", Key = "AutoOpenLastModule", Value = "True", CreatedAt = DateTime.UtcNow }
         );
 
+        // Bootstrap admin: initial hash is only for first access — MustChangePassword forces a change before a session is issued (see AuthenticationService).
         var adminPasswordHash = PasswordHasher.HashStatic("Admin@123");
         modelBuilder.Entity<User>().HasData(new
         {
@@ -38,6 +39,7 @@ internal static class SeedData
             Username = "admin",
             Email = "admin@ict.local",
             PasswordHash = adminPasswordHash,
+            MustChangePassword = true,
             IsActive = true,
             RoleId = AdminRoleId,
             CreatedAt = DateTime.UtcNow

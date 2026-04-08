@@ -8,5 +8,6 @@ public sealed record UserDto(
     bool IsActive,
     Guid RoleId,
     string RoleName,
+    bool MustChangePassword,
     DateTime CreatedAt,
     DateTime? UpdatedAt);

@@ -59,12 +59,26 @@ public sealed class AuthenticationService(
             return Result<SignInResponse>.Failure("Credenciais invalidas.");
         }
 
+        if (user.MustChangePassword)
+        {
+            await auditLogger.WriteAsync("auth.signin.must_change_password", $"UserId: {user.Id}", cancellationToken);
+            var pending = new SignInResponse(
+                user.Id,
+                user.FullName,
+                user.Username,
+                user.Role?.Name ?? "N/A",
+                string.Empty,
+                DateTime.UtcNow,
+                MustChangePassword: true);
+            return Result<SignInResponse>.Success(pending);
+        }
+
         var session = new UserSession(user.Id, Guid.NewGuid().ToString("N"));
         await sessionStore.SetCurrentSessionAsync(session, cancellationToken);
         dbContext.UserSessions.Add(session);
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        var response = new SignInResponse(user.Id, user.FullName, user.Username, user.Role?.Name ?? "N/A", session.SessionToken, DateTime.UtcNow);
+        var response = new SignInResponse(user.Id, user.FullName, user.Username, user.Role?.Name ?? "N/A", session.SessionToken, DateTime.UtcNow, MustChangePassword: false);
         await auditLogger.WriteAsync("auth.signin.success", $"UserId: {user.Id}", cancellationToken);
         return Result<SignInResponse>.Success(response);
     }
@@ -143,6 +157,18 @@ public sealed class UserManagementService(
             return Result<UserDto>.Failure("Usuario ou perfil invalido.");
         }
 
+        var duplicateUsername = await userRepository.GetByUsernameAsync(request.Username, cancellationToken);
+        if (duplicateUsername is not null && duplicateUsername.Id != request.UserId)
+        {
+            return Result<UserDto>.Failure("Username ja existe.");
+        }
+
+        var duplicateEmail = await userRepository.GetByEmailAsync(request.Email, cancellationToken);
+        if (duplicateEmail is not null && duplicateEmail.Id != request.UserId)
+        {
+            return Result<UserDto>.Failure("Email ja existe.");
+        }
+
         user.UpdateProfile(request.FullName, request.Username, request.Email, request.RoleId);
         await dbContext.SaveChangesAsync(cancellationToken);
         await auditLogger.WriteAsync("user.update", $"UserId: {user.Id}", cancellationToken);
@@ -207,7 +233,7 @@ public sealed class UserManagementService(
     }
 
     private static UserDto MapUser(User user, string roleName)
-        => new(user.Id, user.FullName, user.Username, user.Email, user.IsActive, user.RoleId, roleName, user.CreatedAt, user.UpdatedAt);
+        => new(user.Id, user.FullName, user.Username, user.Email, user.IsActive, user.RoleId, roleName, user.MustChangePassword, user.CreatedAt, user.UpdatedAt);
 }
 
 public sealed class AuthorizationService(IUserRepository userRepository, IRoleRepository roleRepository) : IAuthorizationService

@@ -6,4 +6,5 @@ public sealed record SignInResponse(
     string Username,
     string RoleName,
     string SessionToken,
-    DateTime AuthenticatedAtUtc);
+    DateTime AuthenticatedAtUtc,
+    bool MustChangePassword);

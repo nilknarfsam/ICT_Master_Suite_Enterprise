@@ -30,10 +30,10 @@ C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Infrastructure\obj\Debug\net8.0\
 C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Infrastructure\obj\Debug\net8.0\ICTMasterSuite.Infrastructure.AssemblyInfoInputs.cache
 C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Infrastructure\obj\Debug\net8.0\ICTMasterSuite.Infrastructure.AssemblyInfo.cs
 C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Infrastructure\obj\Debug\net8.0\ICTMasterSuite.Infrastructure.csproj.CoreCompileInputs.cache
+C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Infrastructure\obj\Debug\net8.0\ICTMasterSuite.Infrastructure.sourcelink.json
 C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Infrastructure\obj\Debug\net8.0\ICTMaste.E0B667F2.Up2Date
 C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Infrastructure\obj\Debug\net8.0\ICTMasterSuite.Infrastructure.dll
 C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Infrastructure\obj\Debug\net8.0\refint\ICTMasterSuite.Infrastructure.dll
 C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Infrastructure\obj\Debug\net8.0\ICTMasterSuite.Infrastructure.pdb
 C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Infrastructure\obj\Debug\net8.0\ICTMasterSuite.Infrastructure.genruntimeconfig.cache
 C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Infrastructure\obj\Debug\net8.0\ref\ICTMasterSuite.Infrastructure.dll
-C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Infrastructure\obj\Debug\net8.0\ICTMasterSuite.Infrastructure.sourcelink.json

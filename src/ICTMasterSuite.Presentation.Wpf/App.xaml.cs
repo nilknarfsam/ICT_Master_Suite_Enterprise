@@ -60,7 +60,22 @@ public partial class App : System.Windows.Application
             .Build();
 
         _host.Start();
-        EnsureDatabaseInitialized(_host.Services);
+
+        /*
+         * Database startup policy (corporate):
+         * - Primary path is always EF Core Migrate() so schema matches the migration history.
+         * - The previous silent fallback Migrate -> EnsureCreated() was removed: it could mask failures and diverge schema from migrations.
+         * - Optional EnsureCreated is allowed ONLY when Database:AllowEnsureCreatedFallback is true AND IHostEnvironment.IsDevelopment(),
+         *   for local prototyping when migrations are not yet applied (explicit opt-in via appsettings.Development.json + DOTNET_ENVIRONMENT=Development).
+         * - On failure without that escape hatch, we log, show a message, and shut down in a controlled way.
+         */
+        if (!TryInitializeDatabase(_host.Services))
+        {
+            Shutdown(1);
+            base.OnStartup(e);
+            return;
+        }
+
         _host.Services.GetRequiredService<ThemeService>().ApplyTheme(AppTheme.Dark);
 
         var loginWindow = _host.Services.GetRequiredService<LoginWindow>();
@@ -73,6 +88,7 @@ public partial class App : System.Windows.Application
         {
             Shutdown();
         }
+
         base.OnStartup(e);
     }
 
@@ -88,22 +104,56 @@ public partial class App : System.Windows.Application
         base.OnExit(e);
     }
 
-    private static void EnsureDatabaseInitialized(IServiceProvider services)
+    private static bool TryInitializeDatabase(IServiceProvider services)
     {
         using var scope = services.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<IctMasterSuiteDbContext>();
+        var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+        var environment = scope.ServiceProvider.GetRequiredService<IHostEnvironment>();
+        var allowEnsureCreatedFallback = configuration.GetValue("Database:AllowEnsureCreatedFallback", false);
 
         try
         {
             dbContext.Database.Migrate();
-            Log.Information("Banco de dados atualizado com Migrate.");
+            Log.Information("Banco de dados: Migrate() aplicado com sucesso.");
+            return true;
         }
         catch (Exception ex)
         {
-            Log.Warning(ex, "Falha no Migrate. Tentando EnsureCreated.");
-            dbContext.Database.EnsureCreated();
-            Log.Information("Banco de dados garantido com EnsureCreated.");
+            Log.Fatal(ex, "Banco de dados: Migrate() falhou. Corrija conexao, permissoes e historico de migracoes.");
+
+            var mayUseEnsureCreated = allowEnsureCreatedFallback && environment.IsDevelopment();
+            if (!mayUseEnsureCreated)
+            {
+                MessageBox.Show(
+                    "Nao foi possivel aplicar migracoes do banco de dados. Verifique a conexao e os logs.\n\n" +
+                    "O fallback EnsureCreated esta desligado por padrao. Em desenvolvimento, use Database:AllowEnsureCreatedFallback=true em appsettings.Development.json " +
+                    "e DOTNET_ENVIRONMENT=Development apenas como excecao explicita.",
+                    "ICT Master Suite",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                return false;
+            }
+
+            Log.Warning(
+                "Database:AllowEnsureCreatedFallback=true e ambiente Development: tentando EnsureCreated() como ultimo recurso local (nao usar em producao).");
+
+            try
+            {
+                dbContext.Database.EnsureCreated();
+                Log.Warning("EnsureCreated() concluido — o esquema pode nao refletir migracoes; use Migrate() para ambientes reais.");
+                return true;
+            }
+            catch (Exception ex2)
+            {
+                Log.Fatal(ex2, "EnsureCreated() tambem falhou.");
+                MessageBox.Show(
+                    "Falha ao inicializar o banco de dados. Consulte os logs.",
+                    "ICT Master Suite",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                return false;
+            }
         }
     }
 }
-

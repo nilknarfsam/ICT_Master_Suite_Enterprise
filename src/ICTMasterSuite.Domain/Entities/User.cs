@@ -8,17 +8,20 @@ public sealed class User : EntityBase
     public string Username { get; private set; }
     public string Email { get; private set; }
     public string PasswordHash { get; private set; }
+    public bool MustChangePassword { get; private set; }
     public bool IsActive { get; private set; }
     public Guid RoleId { get; private set; }
     public Role? Role { get; private set; }
 
-    public User(string fullName, string username, string email, string passwordHash, Guid roleId)
+    /// <param name="mustChangePassword">When true, the user must change password before a session is issued (e.g. seeded bootstrap).</param>
+    public User(string fullName, string username, string email, string passwordHash, Guid roleId, bool mustChangePassword = false)
     {
         FullName = fullName;
         Username = username;
         Email = email;
         PasswordHash = passwordHash;
         RoleId = roleId;
+        MustChangePassword = mustChangePassword;
         IsActive = true;
     }
 
@@ -34,6 +37,7 @@ public sealed class User : EntityBase
     public void ChangePassword(string passwordHash)
     {
         PasswordHash = passwordHash;
+        MustChangePassword = false;
         Touch();
     }
 

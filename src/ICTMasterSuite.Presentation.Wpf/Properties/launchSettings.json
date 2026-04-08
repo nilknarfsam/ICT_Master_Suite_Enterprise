@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "ICTMasterSuite.Presentation.Wpf": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
