@@ -21,16 +21,41 @@ public sealed class AuthenticationService(
 {
     public async Task<Result<SignInResponse>> SignInAsync(SignInRequest request, CancellationToken cancellationToken = default)
     {
+        await auditLogger.WriteAsync("auth.signin.attempt", $"Username: {request.Username}", cancellationToken);
+
         var validation = await validator.ValidateAsync(request, cancellationToken);
         if (!validation.IsValid)
         {
+            await auditLogger.WriteAsync("auth.signin.validation.failed", $"Username: {request.Username}", cancellationToken);
             return Result<SignInResponse>.Failure(validation.ToString());
         }
 
-        var user = await userRepository.GetByUsernameAsync(request.Username, cancellationToken);
-        if (user is null || !user.IsActive || !passwordHasher.Verify(request.Password, user.PasswordHash))
+        User? user;
+        try
         {
-            await auditLogger.WriteAsync("auth.signin.failed", $"Username: {request.Username}", cancellationToken);
+            user = await userRepository.GetByUsernameAsync(request.Username, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            await auditLogger.WriteAsync("auth.signin.db.failure", $"Username: {request.Username}; Error: {ex.GetType().Name}", cancellationToken);
+            return Result<SignInResponse>.Failure("Falha de conexao com a base de autenticacao.");
+        }
+
+        if (user is null)
+        {
+            await auditLogger.WriteAsync("auth.signin.user.notfound", $"Username: {request.Username}", cancellationToken);
+            return Result<SignInResponse>.Failure("Credenciais invalidas.");
+        }
+
+        if (!user.IsActive)
+        {
+            await auditLogger.WriteAsync("auth.signin.user.inactive", $"UserId: {user.Id}", cancellationToken);
+            return Result<SignInResponse>.Failure("Usuario inativo.");
+        }
+
+        if (!passwordHasher.Verify(request.Password, user.PasswordHash))
+        {
+            await auditLogger.WriteAsync("auth.signin.password.invalid", $"UserId: {user.Id}", cancellationToken);
             return Result<SignInResponse>.Failure("Credenciais invalidas.");
         }
 

@@ -1,5 +1,4 @@
 using System.Windows;
-using System.Windows.Controls;
 using ICTMasterSuite.Presentation.Wpf.ViewModels;
 
 namespace ICTMasterSuite.Presentation.Wpf;
@@ -20,13 +19,5 @@ public partial class LoginWindow : Window
     {
         DialogResult = true;
         Close();
-    }
-
-    private void PasswordInput_OnPasswordChanged(object sender, RoutedEventArgs e)
-    {
-        if (sender is PasswordBox passwordBox)
-        {
-            _viewModel.Password = passwordBox.Password;
-        }
     }
 }

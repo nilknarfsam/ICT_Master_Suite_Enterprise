@@ -1,7 +1,9 @@
 ﻿using System.Windows;
 using ICTMasterSuite.Infrastructure;
+using ICTMasterSuite.Infrastructure.Persistence;
 using ICTMasterSuite.Presentation.Wpf.Services;
 using ICTMasterSuite.Presentation.Wpf.ViewModels;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -51,6 +53,7 @@ public partial class App : System.Windows.Application
             .Build();
 
         _host.Start();
+        EnsureDatabaseInitialized(_host.Services);
         _host.Services.GetRequiredService<ThemeService>().ApplyTheme(AppTheme.Dark);
 
         var loginWindow = _host.Services.GetRequiredService<LoginWindow>();
@@ -76,6 +79,24 @@ public partial class App : System.Windows.Application
 
         Log.CloseAndFlush();
         base.OnExit(e);
+    }
+
+    private static void EnsureDatabaseInitialized(IServiceProvider services)
+    {
+        using var scope = services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<IctMasterSuiteDbContext>();
+
+        try
+        {
+            dbContext.Database.Migrate();
+            Log.Information("Banco de dados atualizado com Migrate.");
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "Falha no Migrate. Tentando EnsureCreated.");
+            dbContext.Database.EnsureCreated();
+            Log.Information("Banco de dados garantido com EnsureCreated.");
+        }
     }
 }
 
