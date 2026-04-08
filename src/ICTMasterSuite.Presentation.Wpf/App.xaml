@@ -1,0 +1,14 @@
+﻿<Application x:Class="ICTMasterSuite.Presentation.Wpf.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:ICTMasterSuite.Presentation.Wpf.Converters">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Themes/Colors.Light.xaml" />
+                <ResourceDictionary Source="Themes/Theme.Base.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <converters:UsersModuleVisibilityConverter x:Key="UsersModuleVisibilityConverter" />
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

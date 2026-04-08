@@ -1,0 +1,33 @@
+<Window x:Class="ICTMasterSuite.Presentation.Wpf.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="ICT Master Suite | Login"
+        Height="440"
+        Width="560"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize">
+    <Grid Margin="24">
+        <Border Background="{DynamicResource SurfaceBrush}" Padding="24" CornerRadius="10">
+            <StackPanel>
+                <TextBlock Text="Bem-vindo ao ICT Master Suite" Style="{DynamicResource TitleTextStyle}" />
+                <TextBlock Text="Acesso corporativo seguro" Foreground="{DynamicResource MutedTextBrush}" Margin="0,4,0,20" />
+
+                <TextBlock Text="Username" />
+                <TextBox Margin="0,6,0,12" Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" />
+
+                <TextBlock Text="Senha" />
+                <PasswordBox x:Name="PasswordInput" Margin="0,6,0,12" PasswordChanged="PasswordInput_OnPasswordChanged" />
+
+                <CheckBox IsChecked="{Binding RememberMe}" Content="Remember me" Margin="0,0,0,12" />
+                <TextBlock Text="{Binding ErrorMessage}" Foreground="#FFFB7185" TextWrapping="Wrap" Margin="0,0,0,12" />
+
+                <Button Height="38"
+                        Content="Entrar"
+                        Command="{Binding SignInCommand}"
+                        Background="{DynamicResource AccentBrush}"
+                        Foreground="#FF0F172A"
+                        FontWeight="Bold" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>
