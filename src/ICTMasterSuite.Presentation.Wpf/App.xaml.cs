@@ -1,9 +1,7 @@
 ﻿using System.Windows;
 using ICTMasterSuite.Infrastructure;
-using ICTMasterSuite.Infrastructure.Persistence;
 using ICTMasterSuite.Presentation.Wpf.Services;
 using ICTMasterSuite.Presentation.Wpf.ViewModels;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -13,9 +11,9 @@ namespace ICTMasterSuite.Presentation.Wpf;
 
 public partial class App : System.Windows.Application
 {
-    private IHost? _host;
+    private Microsoft.Extensions.Hosting.IHost? _host;
 
-    protected override void OnStartup(StartupEventArgs e)
+    protected override async void OnStartup(StartupEventArgs e)
     {
         DispatcherUnhandledException += (_, args) =>
         {
@@ -45,6 +43,7 @@ public partial class App : System.Windows.Application
                     services.AddSingleton<AuthenticatedUserState>();
                     services.AddSingleton<AppSessionState>();
                     services.AddSingleton<FinderResultsState>();
+                    services.AddSingleton<IApplicationOrchestrator, ApplicationOrchestrator>();
                     services.AddTransient<LoginViewModel>();
                     services.AddTransient<LoginWindow>();
                     services.AddTransient<UserManagementViewModel>();
@@ -63,41 +62,8 @@ public partial class App : System.Windows.Application
                 .Build();
 
             _host.Start();
-
-        /*
-         * Database startup policy (corporate):
-         * - Primary path is always EF Core Migrate() so schema matches the migration history.
-         * - The previous silent fallback Migrate -> EnsureCreated() was removed: it could mask failures and diverge schema from migrations.
-         * - Optional EnsureCreated is allowed ONLY when Database:AllowEnsureCreatedFallback is true AND IHostEnvironment.IsDevelopment(),
-         *   for local prototyping when migrations are not yet applied (explicit opt-in via appsettings.Development.json + DOTNET_ENVIRONMENT=Development).
-         * - On failure without that escape hatch, we log, show a message, and shut down in a controlled way.
-         */
-            var sessionState = _host.Services.GetRequiredService<AppSessionState>();
-            var databaseReady = TryInitializeDatabase(_host.Services);
-            sessionState.SetConnectivity(databaseReady ? ConnectivityState.Online : ConnectivityState.Offline);
-            sessionState.SetAuthentication(AuthenticationState.Guest);
-
-            _host.Services.GetRequiredService<ThemeService>().ApplyTheme(AppTheme.Dark);
-
-            if (databaseReady)
-            {
-                var loginWindow = _host.Services.GetRequiredService<LoginWindow>();
-                var loginResult = loginWindow.ShowDialog();
-                if (loginResult is true)
-                {
-                    sessionState.SetAuthentication(AuthenticationState.Authenticated);
-                }
-            }
-            else
-            {
-                MessageBox.Show(
-                    "Inicializacao online indisponivel. O sistema sera aberto em modo visitante/offline com recursos limitados.",
-                    "ICT Master Suite",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Warning);
-            }
-
-            _host.Services.GetRequiredService<MainWindow>().Show();
+            var orchestrator = _host.Services.GetRequiredService<IApplicationOrchestrator>();
+            await orchestrator.StartAsync();
         }
         catch (Exception ex)
         {
@@ -113,60 +79,17 @@ public partial class App : System.Windows.Application
     {
         if (_host is not null)
         {
+            _host.Services.GetRequiredService<IApplicationOrchestrator>().Shutdown();
+        }
+
+        if (_host is not null)
+        {
             await _host.StopAsync(TimeSpan.FromSeconds(5));
             _host.Dispose();
         }
 
         Log.CloseAndFlush();
         base.OnExit(e);
-    }
-
-    private static bool TryInitializeDatabase(IServiceProvider services)
-    {
-        using var scope = services.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<IctMasterSuiteDbContext>();
-        var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
-        var environment = scope.ServiceProvider.GetRequiredService<IHostEnvironment>();
-        var allowEnsureCreatedFallback = configuration.GetValue("Database:AllowEnsureCreatedFallback", false);
-
-        try
-        {
-            dbContext.Database.Migrate();
-            Log.Information("Banco de dados: Migrate() aplicado com sucesso.");
-            return true;
-        }
-        catch (Exception ex)
-        {
-            Log.Fatal(ex, "Banco de dados: Migrate() falhou. Corrija conexao, permissoes e historico de migracoes.");
-
-            var mayUseEnsureCreated = allowEnsureCreatedFallback && environment.IsDevelopment();
-            if (!mayUseEnsureCreated)
-            {
-                Log.Warning(
-                    "Sem fallback para EnsureCreated: inicializando shell em modo offline/restrito.");
-                return false;
-            }
-
-            Log.Warning(
-                "Database:AllowEnsureCreatedFallback=true e ambiente Development: tentando EnsureCreated() como ultimo recurso local (nao usar em producao).");
-
-            try
-            {
-                dbContext.Database.EnsureCreated();
-                Log.Warning("EnsureCreated() concluido — o esquema pode nao refletir migracoes; use Migrate() para ambientes reais.");
-                return true;
-            }
-            catch (Exception ex2)
-            {
-                Log.Fatal(ex2, "EnsureCreated() tambem falhou.");
-                MessageBox.Show(
-                    "Falha ao inicializar o banco de dados. Consulte os logs.",
-                    "ICT Master Suite",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-                return false;
-            }
-        }
     }
 
     private static string BuildUnhandledErrorMessage(Exception exception)

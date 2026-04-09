@@ -10,12 +10,26 @@ namespace ICTMasterSuite.Presentation.Wpf;
 public partial class MainWindow : Window
 {
     private readonly MainWindowViewModel _viewModel;
+    private readonly IApplicationOrchestrator _orchestrator;
+    private readonly AppSessionState _appSessionState;
+    private readonly AuthenticatedUserState _authenticatedUserState;
+    private readonly IctMasterSuiteDbContext _dbContext;
     private readonly IServiceProvider _serviceProvider;
 
-    public MainWindow(MainWindowViewModel viewModel, IServiceProvider serviceProvider)
+    public MainWindow(
+        MainWindowViewModel viewModel,
+        IApplicationOrchestrator orchestrator,
+        AppSessionState appSessionState,
+        AuthenticatedUserState authenticatedUserState,
+        IctMasterSuiteDbContext dbContext,
+        IServiceProvider serviceProvider)
     {
         InitializeComponent();
         _viewModel = viewModel;
+        _orchestrator = orchestrator;
+        _appSessionState = appSessionState;
+        _authenticatedUserState = authenticatedUserState;
+        _dbContext = dbContext;
         _serviceProvider = serviceProvider;
         _viewModel.LoggedOut += OnLoggedOut;
         _viewModel.LogSearch.RegisterAnalysisRequested += OnRegisterAnalysisRequested;
@@ -32,15 +46,14 @@ public partial class MainWindow : Window
         await _viewModel.InitializeAsync();
     }
 
-    private void OnLoggedOut(object? sender, EventArgs e)
+    private async void OnLoggedOut(object? sender, EventArgs e)
     {
-        _ = _viewModel.InitializeAsync();
+        await _orchestrator.LogoutAsync();
     }
 
-    private void OnLoginRequested(object? sender, EventArgs e)
+    private async void OnLoginRequested(object? sender, EventArgs e)
     {
-        var loginWindow = _serviceProvider.GetRequiredService<LoginWindow>();
-        if (loginWindow.ShowDialog() is true)
+        if (await _orchestrator.ShowLoginAsync())
         {
             _ = _viewModel.InitializeAsync();
         }
@@ -49,13 +62,11 @@ public partial class MainWindow : Window
     private async void OnRefreshConnectivityRequested(object? sender, EventArgs e)
     {
         var online = await ProbeConnectivityAsync();
-        var appSession = _serviceProvider.GetRequiredService<AppSessionState>();
-        appSession.SetConnectivity(online ? ConnectivityState.Online : ConnectivityState.Offline);
+        _appSessionState.SetConnectivity(online ? ConnectivityState.Online : ConnectivityState.Offline);
         if (!online)
         {
-            var authState = _serviceProvider.GetRequiredService<AuthenticatedUserState>();
-            authState.Clear();
-            appSession.SetAuthentication(AuthenticationState.Guest);
+            _authenticatedUserState.Clear();
+            _appSessionState.SetAuthentication(AuthenticationState.Guest);
         }
 
         await _viewModel.InitializeAsync();
@@ -76,10 +87,10 @@ public partial class MainWindow : Window
 
     private void OnRegisterAnalysisRequested(object? sender, Domain.Entities.ParsedLog log)
     {
-        var window = _serviceProvider.GetRequiredService<RegisterAnalysisWindow>();
-        window.Owner = this;
-        window.Initialize(log);
-        var success = window.ShowDialog() is true;
+        var registerAnalysisWindow = _serviceProvider.GetRequiredService<RegisterAnalysisWindow>();
+        registerAnalysisWindow.Owner = this;
+        registerAnalysisWindow.Initialize(log);
+        var success = registerAnalysisWindow.ShowDialog() is true;
         _viewModel.LogSearch.StatusMessage = success
             ? "Análise registrada e vinculada ao histórico técnico."
             : _viewModel.LogSearch.StatusMessage;
@@ -89,13 +100,16 @@ public partial class MainWindow : Window
     {
         try
         {
-            using var scope = _serviceProvider.CreateScope();
-            var context = scope.ServiceProvider.GetRequiredService<IctMasterSuiteDbContext>();
-            return await context.Database.CanConnectAsync();
+            return await _dbContext.Database.CanConnectAsync();
         }
         catch
         {
             return false;
         }
+    }
+
+    public Task ReinitializeAsync()
+    {
+        return _viewModel.InitializeAsync();
     }
 }
