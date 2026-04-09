@@ -1,9 +1,8 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ICTMasterSuite.Application.Abstractions.Services;
-using ICTMasterSuite.Application.Logs.Dtos;
-using ICTMasterSuite.Application.Logs.UseCases;
 using ICTMasterSuite.Domain.Entities;
+using ICTMasterSuite.Domain.Enums;
 using ICTMasterSuite.Presentation.Wpf.Services;
 using System.IO;
 using System.Collections.ObjectModel;
@@ -11,10 +10,12 @@ using System.Collections.ObjectModel;
 namespace ICTMasterSuite.Presentation.Wpf.ViewModels;
 
 public partial class LogSearchViewModel(
-    SearchLogsWithAnalysisUseCase useCase,
+    ILogFinderService logFinderService,
+    ISettingsService settingsService,
     ITechnicalHistoryService technicalHistoryService,
     FinderResultsState finderResultsState) : ObservableObject
 {
+    public ObservableCollection<LogFile> Logs { get; } = [];
     public ObservableCollection<string> Directories { get; } = [];
     public ObservableCollection<ParsedLog> Results { get; } = [];
 
@@ -66,29 +67,63 @@ public partial class LogSearchViewModel(
     [RelayCommand]
     private async Task SearchAsync()
     {
-        if (Directories.Count == 0)
-        {
-            StatusMessage = "Adicione ao menos um diretorio.";
-            return;
-        }
-
         IsLoading = true;
         ShowFinderEmptyState = false;
-        StatusMessage = "Pesquisando e analisando logs...";
+        StatusMessage = "Pesquisando logs...";
         Results.Clear();
+        Logs.Clear();
 
-        var request = new SearchLogsWithAnalysisRequest(SearchTerm, Directories.ToList());
-        var parsed = await useCase.ExecuteAsync(request);
-
-        foreach (var item in parsed)
+        try
         {
-            Results.Add(item);
-        }
-        finderResultsState.Set(parsed);
+            var settings = await settingsService.LoadAsync();
+            var configuredPaths = new[]
+            {
+                settings.CaminhoLogsTri,
+                settings.CaminhoLogsAgilent,
+                settings.BackupLocalDir
+            };
 
-        StatusMessage = $"{Results.Count} logs analisados.";
-        ShowFinderEmptyState = Results.Count == 0;
-        IsLoading = false;
+            var searchDirectories = configuredPaths
+                .Concat(Directories)
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Select(x => x.Trim())
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            if (searchDirectories.Count == 0)
+            {
+                StatusMessage = "Configure ao menos um diretorio (TRI, AGILENT ou BACKUP).";
+                ShowFinderEmptyState = true;
+                return;
+            }
+
+            var logs = await logFinderService.BuscarAsync(SearchTerm, searchDirectories);
+            foreach (var log in logs)
+            {
+                Logs.Add(log);
+                Results.Add(new ParsedLog(
+                    sourceType: Path.GetExtension(log.Caminho).TrimStart('.').ToUpperInvariant(),
+                    fileName: log.Nome,
+                    fullPath: log.Caminho,
+                    serialNumber: string.Empty,
+                    model: string.Empty,
+                    station: string.Empty,
+                    logTimestamp: log.Data,
+                    errorCode: string.Empty,
+                    errorDescription: string.Empty,
+                    result: LogResult.Fail,
+                    analysedAt: DateTime.UtcNow,
+                    summary: "Arquivo encontrado pelo Finder."));
+            }
+
+            finderResultsState.Set(Results.ToList());
+            StatusMessage = $"{Logs.Count} arquivo(s) localizado(s).";
+            ShowFinderEmptyState = Logs.Count == 0;
+        }
+        finally
+        {
+            IsLoading = false;
+        }
     }
 
     [RelayCommand]

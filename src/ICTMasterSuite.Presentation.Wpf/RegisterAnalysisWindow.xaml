@@ -6,8 +6,19 @@
         Width="900"
         WindowStartupLocation="CenterOwner"
         ResizeMode="CanResize">
-    <Grid Margin="20">
-        <Border Style="{DynamicResource LoginCardStyle}">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Padding="10" Background="{DynamicResource SurfaceBrush}" Margin="0,0,0,10">
+            <TextBlock Text="Registro de análise"
+                       Style="{DynamicResource SectionTitleTextStyle}" />
+        </Border>
+
+        <Border Grid.Row="1" Style="{DynamicResource LoginCardStyle}" Padding="10">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -15,17 +26,18 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
-                <StackPanel>
+                <StackPanel Margin="8">
                     <TextBlock Text="Registrar análise técnica" Style="{DynamicResource TitleTextStyle}" />
                     <TextBlock Text="Dados do log pré-carregados para agilizar o processo." Foreground="{DynamicResource MutedTextBrush}" Margin="0,4,0,12" />
                 </StackPanel>
 
-                <Grid Grid.Row="1">
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="8">
+                <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <StackPanel Margin="0,0,12,0">
+                    <StackPanel Margin="8">
                         <TextBlock Text="Serial" Style="{DynamicResource LoginLabelTextStyle}" />
                         <TextBox Style="{DynamicResource LoginInputTextBoxStyle}" Text="{Binding SerialNumber}" IsReadOnly="True" Margin="0,0,0,8" />
                         <TextBlock Text="Modelo" Style="{DynamicResource LoginLabelTextStyle}" />
@@ -48,18 +60,24 @@
                         <TextBox Text="{Binding AnalysisText, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" Height="155" />
                     </StackPanel>
                 </Grid>
+                </ScrollViewer>
 
-                <DockPanel Grid.Row="2" Margin="0,14,0,0">
+                <DockPanel Grid.Row="2" Margin="8,14,8,8">
                     <TextBlock DockPanel.Dock="Left"
                                Text="{Binding StatusMessage}"
                                Foreground="#FFFDA4AF"
                                VerticalAlignment="Center" />
                     <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-                        <Button Content="Cancelar" Margin="0,0,8,0" Command="{Binding CancelCommand}" />
+                        <Button Content="Cancelar" Margin="0,0,10,0" Command="{Binding CancelCommand}" />
                         <Button Content="Salvar análise" Style="{DynamicResource LoginPrimaryButtonStyle}" Width="160" Command="{Binding SaveCommand}" />
                     </StackPanel>
                 </DockPanel>
             </Grid>
+        </Border>
+
+        <Border Grid.Row="2" Padding="10" Background="{DynamicResource SurfaceBrush}" Margin="0,10,0,0">
+            <TextBlock Text="Campos editáveis: técnico, resumo e texto da análise."
+                       Foreground="{DynamicResource MutedTextBrush}" />
         </Border>
     </Grid>
 </Window>

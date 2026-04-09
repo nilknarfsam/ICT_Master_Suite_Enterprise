@@ -13,90 +13,87 @@ public sealed class LogFinderService : ILogFinderService
         ".log"
     ];
 
-    public Task<IReadOnlyCollection<LogFile>> SearchAsync(
-        string term,
-        IReadOnlyCollection<string> directories,
+    public async Task<List<LogFile>> BuscarAsync(
+        string termo,
+        List<string> diretorios,
         CancellationToken cancellationToken = default)
     {
         var results = new List<LogFile>();
         var uniquePaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        var normalizedTerm = term?.Trim() ?? string.Empty;
+        var normalizedTerm = termo?.Trim() ?? string.Empty;
 
-        foreach (var directory in directories.Where(Directory.Exists).Distinct(StringComparer.OrdinalIgnoreCase))
+        foreach (var directory in diretorios.Where(Directory.Exists).Distinct(StringComparer.OrdinalIgnoreCase))
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            foreach (var filePath in EnumerateFilesSafe(directory, cancellationToken))
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                var fileName = Path.GetFileName(filePath);
-                var extension = Path.GetExtension(filePath).ToLowerInvariant();
-
-                if (!AllowedExtensions.Contains(extension))
-                {
-                    continue;
-                }
-
-                if (fileName.Contains("pass", StringComparison.OrdinalIgnoreCase) ||
-                    fileName.StartsWith("p_", StringComparison.OrdinalIgnoreCase))
-                {
-                    continue;
-                }
-
-                if (!string.IsNullOrWhiteSpace(normalizedTerm) &&
-                    !fileName.Contains(normalizedTerm, StringComparison.OrdinalIgnoreCase))
-                {
-                    continue;
-                }
-
-                var fullPath = Path.GetFullPath(filePath);
-                if (!uniquePaths.Add(fullPath))
-                {
-                    continue;
-                }
-
-                var lastWrite = File.GetLastWriteTimeUtc(filePath);
-                results.Add(new LogFile(fileName, fullPath, extension, lastWrite));
-            }
-        }
-
-        return Task.FromResult<IReadOnlyCollection<LogFile>>(
-            results.OrderByDescending(x => x.LastModifiedAt).ToList());
-    }
-
-    private static IEnumerable<string> EnumerateFilesSafe(string rootDirectory, CancellationToken cancellationToken)
-    {
-        var pending = new Stack<string>();
-        pending.Push(rootDirectory);
-
-        while (pending.Count > 0)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            var current = pending.Pop();
-
-            IEnumerable<string> files = [];
-            IEnumerable<string> directories = [];
-
+            IEnumerable<string> filePaths;
             try
             {
-                files = Directory.EnumerateFiles(current);
-                directories = Directory.EnumerateDirectories(current);
+                filePaths = Directory.EnumerateFiles(directory, "*", SearchOption.AllDirectories);
             }
-            catch
+            catch (UnauthorizedAccessException)
+            {
+                continue;
+            }
+            catch (IOException)
             {
                 continue;
             }
 
-            foreach (var file in files)
+            try
             {
-                yield return file;
-            }
+                foreach (var filePath in filePaths)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    var fileName = Path.GetFileName(filePath);
+                    var extension = Path.GetExtension(filePath).ToLowerInvariant();
 
-            foreach (var directory in directories)
+                    if (!AllowedExtensions.Contains(extension))
+                    {
+                        continue;
+                    }
+
+                    if (fileName.Contains("pass", StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(normalizedTerm) &&
+                        !fileName.Contains(normalizedTerm, StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+
+                    var fullPath = Path.GetFullPath(filePath);
+                    if (!uniquePaths.Add(fullPath))
+                    {
+                        continue;
+                    }
+
+                    var lastWrite = File.GetLastWriteTime(filePath);
+                    results.Add(new LogFile(fileName, fullPath, lastWrite));
+                }
+            }
+            catch (UnauthorizedAccessException)
             {
-                pending.Push(directory);
+                continue;
+            }
+            catch (IOException)
+            {
+                continue;
             }
         }
+
+        var ordered = results.OrderByDescending(x => x.Data).ToList();
+        return await Task.FromResult(ordered);
+    }
+
+    public async Task<IReadOnlyCollection<LogFile>> SearchAsync(
+        string term,
+        IReadOnlyCollection<string> directories,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await BuscarAsync(term, directories.ToList(), cancellationToken);
+        return result;
     }
 }

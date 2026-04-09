@@ -4,6 +4,7 @@ namespace ICTMasterSuite.Application.Abstractions.Services;
 
 public interface ILogFinderService
 {
+    Task<List<LogFile>> BuscarAsync(string termo, List<string> diretorios, CancellationToken cancellationToken = default);
     Task<IReadOnlyCollection<LogFile>> SearchAsync(string term, IReadOnlyCollection<string> directories, CancellationToken cancellationToken = default);
 }
 

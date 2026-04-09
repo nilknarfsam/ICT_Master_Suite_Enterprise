@@ -1,4 +1,5 @@
 using System.Windows;
+using ICTMasterSuite.Infrastructure.Services;
 using ICTMasterSuite.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -11,13 +12,16 @@ namespace ICTMasterSuite.Presentation.Wpf.Services;
 public sealed class ApplicationOrchestrator(
     IServiceProvider rootProvider,
     ThemeService themeService,
-    AppSessionState sessionState) : IApplicationOrchestrator
+    AppSessionState sessionState,
+    TestEnvironmentService testEnvironmentService) : IApplicationOrchestrator
 {
     private IServiceScope? _mainScope;
     private MainWindow? _mainWindow;
 
     public async Task StartAsync()
     {
+        testEnvironmentService.EnsureTestFolders();
+
         var databaseReady = TryInitializeDatabase();
         sessionState.SetConnectivity(databaseReady ? ConnectivityState.Online : ConnectivityState.Offline);
         sessionState.SetAuthentication(AuthenticationState.Guest);

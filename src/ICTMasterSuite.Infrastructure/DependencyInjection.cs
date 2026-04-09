@@ -45,6 +45,8 @@ public static class DependencyInjection
         });
         services.AddScoped<IUpdaterService, UpdaterService>();
         services.AddScoped<ISystemConfigurationService, SystemConfigurationService>();
+        services.AddSingleton<ISettingsService, JsonSettingsService>();
+        services.AddSingleton<TestEnvironmentService>();
 
         return services;
     }

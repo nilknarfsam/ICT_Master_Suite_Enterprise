@@ -7,15 +7,26 @@
         MinHeight="600"
         MinWidth="1000">
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="250" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
 
-        <Border Grid.Column="0" Background="{DynamicResource SurfaceBrush}" Padding="12">
+        <Border Grid.Row="0" Background="{DynamicResource SurfaceBrush}" Padding="10">
+            <TextBlock Text="ICT Master Suite"
+                       Style="{DynamicResource TitleTextStyle}" />
+        </Border>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="250" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0" Background="{DynamicResource SurfaceBrush}" Padding="10" Margin="8">
             <DockPanel LastChildFill="True">
                 <StackPanel DockPanel.Dock="Top" Margin="0,0,0,12">
-                    <TextBlock Text="ICT Master Suite" Style="{DynamicResource TitleTextStyle}" />
                     <TextBlock Text="Arquitetura premium WPF + MVVM" Foreground="{DynamicResource MutedTextBrush}" />
                     <TextBlock Text="{Binding LoggedUserLabel}" Margin="0,8,0,8" Foreground="{DynamicResource MutedTextBrush}" />
                     <TextBlock Text="{Binding SessionStatusLabel}" Foreground="{DynamicResource AccentBrush}" Margin="0,0,0,8" />
@@ -41,7 +52,7 @@
             </DockPanel>
         </Border>
 
-        <Border Grid.Column="1" Padding="24" Background="{DynamicResource AppBackgroundBrush}">
+        <Border Grid.Column="1" Padding="10" Margin="8" Background="{DynamicResource AppBackgroundBrush}">
             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
             <StackPanel>
                 <Border Margin="0,0,0,12"
@@ -104,7 +115,9 @@
                                   ItemsSource="{Binding UserManagement.Users}"
                                   SelectedItem="{Binding UserManagement.SelectedUser}"
                                   AutoGenerateColumns="False"
-                                  IsReadOnly="True">
+                                  IsReadOnly="True"
+                                  Margin="8"
+                                  VerticalAlignment="Stretch">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Nome" Binding="{Binding FullName}" Width="*" />
                                 <DataGridTextColumn Header="Username" Binding="{Binding Username}" Width="*" />
@@ -165,7 +178,9 @@
                                   ItemsSource="{Binding LogSearch.Results}"
                                   SelectedItem="{Binding LogSearch.SelectedResult}"
                                   AutoGenerateColumns="False"
-                                  IsReadOnly="True">
+                                  IsReadOnly="True"
+                                  Margin="8"
+                                  VerticalAlignment="Stretch">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Arquivo" Binding="{Binding FileName}" Width="*" />
                                 <DataGridTextColumn Header="Tipo" Binding="{Binding SourceType}" Width="100" />
@@ -232,7 +247,9 @@
                                   ItemsSource="{Binding TechnicalHistory.Analyses}"
                                   SelectedItem="{Binding TechnicalHistory.SelectedAnalysis}"
                                   AutoGenerateColumns="False"
-                                  IsReadOnly="True">
+                                  IsReadOnly="True"
+                                  Margin="8"
+                                  VerticalAlignment="Stretch">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Data" Binding="{Binding CreatedAt}" Width="150" />
                                 <DataGridTextColumn Header="Serial" Binding="{Binding SerialNumber}" Width="120" />
@@ -294,7 +311,9 @@
                                   ItemsSource="{Binding KnowledgeBase.Articles}"
                                   SelectedItem="{Binding KnowledgeBase.SelectedArticle}"
                                   AutoGenerateColumns="False"
-                                  IsReadOnly="True">
+                                  IsReadOnly="True"
+                                  Margin="8"
+                                  VerticalAlignment="Stretch">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Modelo" Binding="{Binding Model}" Width="120" />
                                 <DataGridTextColumn Header="Fase" Binding="{Binding TestPhase}" Width="120" />
@@ -407,7 +426,9 @@
                                           MinHeight="160"
                                           ItemsSource="{Binding Dashboard.TopSerials}"
                                           AutoGenerateColumns="False"
-                                          IsReadOnly="True">
+                                          IsReadOnly="True"
+                                          Margin="8"
+                                          VerticalAlignment="Stretch">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Header="Serial" Binding="{Binding SerialNumber}" Width="*" />
                                         <DataGridTextColumn Header="Ocorrências" Binding="{Binding Occurrences}" Width="130" />
@@ -517,6 +538,12 @@
                            Text="{Binding KnowledgeBase.StatusMessage}" />
             </StackPanel>
             </ScrollViewer>
+        </Border>
+        </Grid>
+
+        <Border Grid.Row="2" Background="{DynamicResource SurfaceBrush}" Padding="10">
+            <TextBlock Text="{Binding SessionStatusLabel}"
+                       Foreground="{DynamicResource MutedTextBrush}" />
         </Border>
     </Grid>
 </Window>
