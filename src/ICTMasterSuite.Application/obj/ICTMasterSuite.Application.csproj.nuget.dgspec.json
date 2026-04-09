@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\projetos\\ICT_Master_Suite\\src\\ICTMasterSuite.Application\\ICTMasterSuite.Application.csproj": {}
+    "C:\\projetos\\ICT_Master_Suite\\src\\ICTMasterSuite.Application\\ICTMasterSuite.Application.csproj": {}
   },
   "projects": {
-    "c:\\projetos\\ICT_Master_Suite\\src\\ICTMasterSuite.Application\\ICTMasterSuite.Application.csproj": {
+    "C:\\projetos\\ICT_Master_Suite\\src\\ICTMasterSuite.Application\\ICTMasterSuite.Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\projetos\\ICT_Master_Suite\\src\\ICTMasterSuite.Application\\ICTMasterSuite.Application.csproj",
+        "projectUniqueName": "C:\\projetos\\ICT_Master_Suite\\src\\ICTMasterSuite.Application\\ICTMasterSuite.Application.csproj",
         "projectName": "ICTMasterSuite.Application",
-        "projectPath": "c:\\projetos\\ICT_Master_Suite\\src\\ICTMasterSuite.Application\\ICTMasterSuite.Application.csproj",
+        "projectPath": "C:\\projetos\\ICT_Master_Suite\\src\\ICTMasterSuite.Application\\ICTMasterSuite.Application.csproj",
         "packagesPath": "C:\\Users\\fcampos\\.nuget\\packages\\",
-        "outputPath": "c:\\projetos\\ICT_Master_Suite\\src\\ICTMasterSuite.Application\\obj\\",
+        "outputPath": "C:\\projetos\\ICT_Master_Suite\\src\\ICTMasterSuite.Application\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

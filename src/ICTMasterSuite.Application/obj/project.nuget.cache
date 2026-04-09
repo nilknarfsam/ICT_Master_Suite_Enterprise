@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "uzeZoEdtZJI=",
+  "dgSpecHash": "2xhp3XZhbq0=",
   "success": true,
-  "projectFilePath": "c:\\projetos\\ICT_Master_Suite\\src\\ICTMasterSuite.Application\\ICTMasterSuite.Application.csproj",
+  "projectFilePath": "C:\\projetos\\ICT_Master_Suite\\src\\ICTMasterSuite.Application\\ICTMasterSuite.Application.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\fcampos\\.nuget\\packages\\fluentvalidation\\12.1.1\\fluentvalidation.12.1.1.nupkg.sha512",
     "C:\\Users\\fcampos\\.nuget\\packages\\fluentvalidation.dependencyinjectionextensions\\12.1.1\\fluentvalidation.dependencyinjectionextensions.12.1.1.nupkg.sha512",

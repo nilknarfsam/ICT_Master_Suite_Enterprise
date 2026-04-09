@@ -1,5 +1,8 @@
 ﻿using System.Windows;
+using ICTMasterSuite.Infrastructure.Persistence;
+using ICTMasterSuite.Presentation.Wpf.Services;
 using ICTMasterSuite.Presentation.Wpf.ViewModels;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ICTMasterSuite.Presentation.Wpf;
@@ -18,6 +21,8 @@ public partial class MainWindow : Window
         _viewModel.LogSearch.RegisterAnalysisRequested += OnRegisterAnalysisRequested;
         _viewModel.LogSearch.ViewHistoryRequested += OnViewHistoryRequested;
         _viewModel.LogSearch.SearchKnowledgeRequested += OnSearchKnowledgeRequested;
+        _viewModel.LoginRequested += OnLoginRequested;
+        _viewModel.RefreshConnectivityRequested += OnRefreshConnectivityRequested;
         DataContext = _viewModel;
         Loaded += OnLoaded;
     }
@@ -29,16 +34,31 @@ public partial class MainWindow : Window
 
     private void OnLoggedOut(object? sender, EventArgs e)
     {
-        Hide();
+        _ = _viewModel.InitializeAsync();
+    }
+
+    private void OnLoginRequested(object? sender, EventArgs e)
+    {
         var loginWindow = _serviceProvider.GetRequiredService<LoginWindow>();
         if (loginWindow.ShowDialog() is true)
         {
-            Show();
             _ = _viewModel.InitializeAsync();
-            return;
+        }
+    }
+
+    private async void OnRefreshConnectivityRequested(object? sender, EventArgs e)
+    {
+        var online = await ProbeConnectivityAsync();
+        var appSession = _serviceProvider.GetRequiredService<AppSessionState>();
+        appSession.SetConnectivity(online ? ConnectivityState.Online : ConnectivityState.Offline);
+        if (!online)
+        {
+            var authState = _serviceProvider.GetRequiredService<AuthenticatedUserState>();
+            authState.Clear();
+            appSession.SetAuthentication(AuthenticationState.Guest);
         }
 
-        Close();
+        await _viewModel.InitializeAsync();
     }
 
     private async void OnViewHistoryRequested(object? sender, string serialNumber)
@@ -63,5 +83,19 @@ public partial class MainWindow : Window
         _viewModel.LogSearch.StatusMessage = success
             ? "Análise registrada e vinculada ao histórico técnico."
             : _viewModel.LogSearch.StatusMessage;
+    }
+
+    private async Task<bool> ProbeConnectivityAsync()
+    {
+        try
+        {
+            using var scope = _serviceProvider.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<IctMasterSuiteDbContext>();
+            return await context.Database.CanConnectAsync();
+        }
+        catch
+        {
+            return false;
+        }
     }
 }

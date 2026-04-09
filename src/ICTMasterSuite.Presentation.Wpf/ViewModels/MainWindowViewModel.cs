@@ -9,6 +9,7 @@ namespace ICTMasterSuite.Presentation.Wpf.ViewModels;
 
 public partial class MainWindowViewModel(
     AuthenticatedUserState authenticatedUserState,
+    AppSessionState appSessionState,
     IAuthorizationService authorizationService,
     IAuthenticationService authenticationService,
     UserManagementViewModel userManagementViewModel,
@@ -36,18 +37,76 @@ public partial class MainWindowViewModel(
     [ObservableProperty]
     private string loggedUserLabel = string.Empty;
 
+    [ObservableProperty]
+    private string sessionStatusLabel = string.Empty;
+
+    [ObservableProperty]
+    private bool canAuthenticate = true;
+
+    [ObservableProperty]
+    private bool canUseRestrictedFinderActions;
+
+    [ObservableProperty]
+    private bool canShowLoginAction;
+
+    [ObservableProperty]
+    private bool canShowLogoutAction;
+
+    [ObservableProperty]
+    private bool isRestrictedMode;
+
+    [ObservableProperty]
+    private string restrictedModeMessage = string.Empty;
+
     public event EventHandler? LoggedOut;
+    public event EventHandler? LoginRequested;
+    public event EventHandler? RefreshConnectivityRequested;
 
     public async Task InitializeAsync()
     {
-        if (authenticatedUserState.Current is null)
+        CanAuthenticate = appSessionState.IsOnline;
+        var isGuest = authenticatedUserState.Current is null || appSessionState.IsGuest;
+        if (isGuest)
+        {
+            LoggedUserLabel = appSessionState.IsOnline
+                ? "Modo visitante ativo (nao autenticado)."
+                : "Modo visitante/offline ativo.";
+            appSessionState.SetAuthentication(AuthenticationState.Guest);
+            IsRestrictedMode = true;
+            CanUseRestrictedFinderActions = false;
+            CanShowLoginAction = true;
+            CanShowLogoutAction = false;
+            SessionStatusLabel = appSessionState.IsOnline ? "Conectado" : "Offline";
+            RestrictedModeMessage = appSessionState.IsOnline
+                ? "Recursos avancados exigem login. Finder e leitura de resultados permanecem liberados."
+                : "Modo offline: recursos que dependem de autenticacao/banco estao indisponiveis.";
+            Modules = BuildRestrictedModules();
+            OnPropertyChanged(nameof(Modules));
+            SelectedModule = Modules.FirstOrDefault();
+            return;
+        }
+
+        var currentUser = authenticatedUserState.Current!;
+        appSessionState.SetAuthentication(AuthenticationState.Authenticated);
+        LoggedUserLabel = $"{currentUser.FullName} ({currentUser.RoleName})";
+        SessionStatusLabel = appSessionState.IsOnline ? "Autenticado / Online" : "Autenticado / Offline";
+        IsRestrictedMode = appSessionState.IsOffline;
+        CanUseRestrictedFinderActions = appSessionState.IsOnline;
+        CanShowLoginAction = false;
+        CanShowLogoutAction = true;
+        RestrictedModeMessage = appSessionState.IsOffline
+            ? "Sessao autenticada, porem offline. Modulos que exigem banco/rede ficam bloqueados."
+            : string.Empty;
+
+        Modules = await BuildModulesAsync(currentUser.UserId);
+        OnPropertyChanged(nameof(Modules));
+        SelectedModule = Modules.FirstOrDefault();
+
+        if (appSessionState.IsOffline)
         {
             return;
         }
 
-        LoggedUserLabel = $"{authenticatedUserState.Current.FullName} ({authenticatedUserState.Current.RoleName})";
-        Modules = await BuildModulesAsync(authenticatedUserState.Current.UserId);
-        SelectedModule = Modules.FirstOrDefault();
         await UserManagement.InitializeAsync();
         await Dashboard.RefreshDataAsync();
         await Settings.LoadAsync();
@@ -60,9 +119,33 @@ public partial class MainWindowViewModel(
     [RelayCommand]
     private async Task LogoutAsync()
     {
+        if (authenticatedUserState.Current is null)
+        {
+            return;
+        }
+
         await authenticationService.SignOutAsync();
         authenticatedUserState.Clear();
+        appSessionState.SetAuthentication(AuthenticationState.Guest);
         LoggedOut?.Invoke(this, EventArgs.Empty);
+    }
+
+    [RelayCommand]
+    private void Login()
+    {
+        if (!CanAuthenticate)
+        {
+            RestrictedModeMessage = "Sem conectividade com banco/rede: login indisponivel no momento.";
+            return;
+        }
+
+        LoginRequested?.Invoke(this, EventArgs.Empty);
+    }
+
+    [RelayCommand]
+    private void RefreshConnectivity()
+    {
+        RefreshConnectivityRequested?.Invoke(this, EventArgs.Empty);
     }
 
     private async Task<IReadOnlyCollection<ModuleNavigationItemViewModel>> BuildModulesAsync(Guid userId)
@@ -92,6 +175,16 @@ public partial class MainWindowViewModel(
         }
 
         return filtered;
+    }
+
+    private IReadOnlyCollection<ModuleNavigationItemViewModel> BuildRestrictedModules()
+    {
+        var modules = new List<ModuleNavigationItemViewModel>
+        {
+            new(SystemModule.Authentication, "Autenticacao e Acesso", "Entre com credenciais corporativas para liberar modulos avancados."),
+            new(SystemModule.LogFinder, "Finder de Logs", "Busca e leitura local de logs em modo restrito.")
+        };
+        return modules;
     }
 
     public void NavigateToModule(SystemModule module)

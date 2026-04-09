@@ -10,7 +10,8 @@ namespace ICTMasterSuite.Presentation.Wpf.ViewModels;
 public partial class LoginViewModel(
     IAuthenticationService authenticationService,
     IUserManagementService userManagementService,
-    AuthenticatedUserState authenticatedUserState) : ObservableObject
+    AuthenticatedUserState authenticatedUserState,
+    AppSessionState appSessionState) : ObservableObject
 {
     [ObservableProperty] private string username = string.Empty;
     [ObservableProperty] private string password = string.Empty;
@@ -36,6 +37,13 @@ public partial class LoginViewModel(
         IsBusy = true;
         ErrorMessage = string.Empty;
 
+        if (appSessionState.IsOffline)
+        {
+            ErrorMessage = "Sem conectividade com o banco/rede. O login online nao pode ser concluido neste momento.";
+            IsBusy = false;
+            return;
+        }
+
         var result = await authenticationService.SignInAsync(new SignInRequest(Username, Password, RememberMe));
         if (!result.IsSuccess || result.Value is null)
         {
@@ -56,6 +64,7 @@ public partial class LoginViewModel(
         }
 
         authenticatedUserState.Set(result.Value);
+        appSessionState.SetAuthentication(AuthenticationState.Authenticated);
         IsBusy = false;
         LoginSucceeded?.Invoke(this, EventArgs.Empty);
     }
@@ -110,6 +119,7 @@ public partial class LoginViewModel(
         _pendingMandatoryPasswordUserId = null;
 
         authenticatedUserState.Set(session.Value);
+        appSessionState.SetAuthentication(AuthenticationState.Authenticated);
         IsBusy = false;
         LoginSucceeded?.Invoke(this, EventArgs.Empty);
     }

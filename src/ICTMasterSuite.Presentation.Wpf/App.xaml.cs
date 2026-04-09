@@ -20,7 +20,7 @@ public partial class App : System.Windows.Application
         DispatcherUnhandledException += (_, args) =>
         {
             Log.Error(args.Exception, "Erro nao tratado na UI.");
-            MessageBox.Show("Ocorreu um erro inesperado. Consulte os logs.", "ICT Master Suite", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(BuildUnhandledErrorMessage(args.Exception), "ICT Master Suite", MessageBoxButton.OK, MessageBoxImage.Error);
             args.Handled = true;
         };
 
@@ -29,37 +29,40 @@ public partial class App : System.Windows.Application
             Log.Fatal(args.ExceptionObject as Exception, "Erro fatal nao tratado.");
         };
 
-        _host = Host.CreateDefaultBuilder()
-            .ConfigureAppConfiguration(configuration =>
-            {
-                configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
-            })
-            .UseSerilog((_, _, logger) => logger.AddCentralizedLogging())
-            .ConfigureServices((context, services) =>
-            {
-                ICTMasterSuite.Application.DependencyInjection.AddApplication(services);
-                services.AddInfrastructure(context.Configuration);
-                services.AddSingleton<ThemeService>();
-                services.AddSingleton<AuthenticatedUserState>();
-                services.AddSingleton<FinderResultsState>();
-                services.AddTransient<LoginViewModel>();
-                services.AddTransient<LoginWindow>();
-                services.AddTransient<UserManagementViewModel>();
-                services.AddSingleton<LogSearchViewModel>();
-                services.AddTransient<TechnicalHistoryViewModel>();
-                services.AddTransient<KnowledgeBaseViewModel>();
-                services.AddTransient<DashboardViewModel>();
-                services.AddTransient<ReportsViewModel>();
-                services.AddTransient<SystemSettingsViewModel>();
-                services.AddTransient<UpdaterViewModel>();
-                services.AddTransient<RegisterAnalysisViewModel>();
-                services.AddTransient<RegisterAnalysisWindow>();
-                services.AddSingleton<MainWindowViewModel>();
-                services.AddSingleton<MainWindow>();
-            })
-            .Build();
+        try
+        {
+            _host = Host.CreateDefaultBuilder()
+                .ConfigureAppConfiguration(configuration =>
+                {
+                    configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+                })
+                .UseSerilog((_, _, logger) => logger.AddCentralizedLogging())
+                .ConfigureServices((context, services) =>
+                {
+                    ICTMasterSuite.Application.DependencyInjection.AddApplication(services);
+                    services.AddInfrastructure(context.Configuration);
+                    services.AddSingleton<ThemeService>();
+                    services.AddSingleton<AuthenticatedUserState>();
+                    services.AddSingleton<AppSessionState>();
+                    services.AddSingleton<FinderResultsState>();
+                    services.AddTransient<LoginViewModel>();
+                    services.AddTransient<LoginWindow>();
+                    services.AddTransient<UserManagementViewModel>();
+                    services.AddTransient<LogSearchViewModel>();
+                    services.AddTransient<TechnicalHistoryViewModel>();
+                    services.AddTransient<KnowledgeBaseViewModel>();
+                    services.AddTransient<DashboardViewModel>();
+                    services.AddTransient<ReportsViewModel>();
+                    services.AddTransient<SystemSettingsViewModel>();
+                    services.AddTransient<UpdaterViewModel>();
+                    services.AddTransient<RegisterAnalysisViewModel>();
+                    services.AddTransient<RegisterAnalysisWindow>();
+                    services.AddTransient<MainWindowViewModel>();
+                    services.AddTransient<MainWindow>();
+                })
+                .Build();
 
-        _host.Start();
+            _host.Start();
 
         /*
          * Database startup policy (corporate):
@@ -69,24 +72,38 @@ public partial class App : System.Windows.Application
          *   for local prototyping when migrations are not yet applied (explicit opt-in via appsettings.Development.json + DOTNET_ENVIRONMENT=Development).
          * - On failure without that escape hatch, we log, show a message, and shut down in a controlled way.
          */
-        if (!TryInitializeDatabase(_host.Services))
-        {
-            Shutdown(1);
-            base.OnStartup(e);
-            return;
-        }
+            var sessionState = _host.Services.GetRequiredService<AppSessionState>();
+            var databaseReady = TryInitializeDatabase(_host.Services);
+            sessionState.SetConnectivity(databaseReady ? ConnectivityState.Online : ConnectivityState.Offline);
+            sessionState.SetAuthentication(AuthenticationState.Guest);
 
-        _host.Services.GetRequiredService<ThemeService>().ApplyTheme(AppTheme.Dark);
+            _host.Services.GetRequiredService<ThemeService>().ApplyTheme(AppTheme.Dark);
 
-        var loginWindow = _host.Services.GetRequiredService<LoginWindow>();
-        var loginResult = loginWindow.ShowDialog();
-        if (loginResult is true)
-        {
+            if (databaseReady)
+            {
+                var loginWindow = _host.Services.GetRequiredService<LoginWindow>();
+                var loginResult = loginWindow.ShowDialog();
+                if (loginResult is true)
+                {
+                    sessionState.SetAuthentication(AuthenticationState.Authenticated);
+                }
+            }
+            else
+            {
+                MessageBox.Show(
+                    "Inicializacao online indisponivel. O sistema sera aberto em modo visitante/offline com recursos limitados.",
+                    "ICT Master Suite",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+            }
+
             _host.Services.GetRequiredService<MainWindow>().Show();
         }
-        else
+        catch (Exception ex)
         {
-            Shutdown();
+            Log.Fatal(ex, "Falha durante startup da aplicacao.");
+            MessageBox.Show(BuildStartupErrorMessage(ex), "ICT Master Suite", MessageBoxButton.OK, MessageBoxImage.Error);
+            Shutdown(1);
         }
 
         base.OnStartup(e);
@@ -125,13 +142,8 @@ public partial class App : System.Windows.Application
             var mayUseEnsureCreated = allowEnsureCreatedFallback && environment.IsDevelopment();
             if (!mayUseEnsureCreated)
             {
-                MessageBox.Show(
-                    "Nao foi possivel aplicar migracoes do banco de dados. Verifique a conexao e os logs.\n\n" +
-                    "O fallback EnsureCreated esta desligado por padrao. Em desenvolvimento, use Database:AllowEnsureCreatedFallback=true em appsettings.Development.json " +
-                    "e DOTNET_ENVIRONMENT=Development apenas como excecao explicita.",
-                    "ICT Master Suite",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
+                Log.Warning(
+                    "Sem fallback para EnsureCreated: inicializando shell em modo offline/restrito.");
                 return false;
             }
 
@@ -155,5 +167,33 @@ public partial class App : System.Windows.Application
                 return false;
             }
         }
+    }
+
+    private static string BuildUnhandledErrorMessage(Exception exception)
+    {
+        if (!IsDevelopmentEnvironment())
+        {
+            return "Ocorreu um erro inesperado. Consulte os logs.";
+        }
+
+        return $"Ocorreu um erro inesperado.\n{exception.GetType().Name}: {exception.Message}";
+    }
+
+    private static string BuildStartupErrorMessage(Exception exception)
+    {
+        if (!IsDevelopmentEnvironment())
+        {
+            return "Falha ao inicializar o aplicativo. Consulte os logs.";
+        }
+
+        return $"Falha ao inicializar o aplicativo.\n{exception.GetType().Name}: {exception.Message}";
+    }
+
+    private static bool IsDevelopmentEnvironment()
+    {
+        var environment =
+            Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
+            ?? Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+        return string.Equals(environment, "Development", StringComparison.OrdinalIgnoreCase);
     }
 }

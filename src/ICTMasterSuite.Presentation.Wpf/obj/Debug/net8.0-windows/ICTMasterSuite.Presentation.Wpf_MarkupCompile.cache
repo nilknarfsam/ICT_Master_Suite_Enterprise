@@ -4,17 +4,17 @@
 winexe
 C#
 .cs
-c:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Presentation.Wpf\obj\Debug\net8.0-windows\
+C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Presentation.Wpf\obj\Debug\net8.0-windows\
 ICTMasterSuite.Presentation.Wpf
 none
 false
 TRACE;DEBUG;NET;NET8_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_OR_GREATER;NET7_0_OR_GREATER;NET8_0_OR_GREATER;NETCOREAPP3_0_OR_GREATER;NETCOREAPP3_1_OR_GREATER;WINDOWS7_0_OR_GREATER
-c:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Presentation.Wpf\App.xaml
+C:\projetos\ICT_Master_Suite\src\ICTMasterSuite.Presentation.Wpf\App.xaml
 7-713666559
 
-261151464126
-278-1625948006
+25-570276193
+2781721033130
 LoginWindow.xaml;MainWindow.xaml;RegisterAnalysisWindow.xaml;Themes\Colors.Dark.xaml;Themes\Colors.Light.xaml;Themes\Theme.Base.xaml;Themes\Theme.ModuleChrome.xaml;
 
-True
+False
 
